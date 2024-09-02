@@ -179,11 +179,11 @@ class Qe2BgwTask(QeTask):
             )
 
         rho_defaults = dict(
-            rhog_flag = True,
+            rhog_flag = False, # Pierre : set this to False by default
             rhog_file = 'rho.real',
             vxcg_flag = False,
             vxcg_file = 'vxc.real',
-            vxc_flag = True,
+            vxc_flag = False,    # Pierre : set this to False by default
             vxc_file = 'vxc.dat',
             vxc_diag_nmin = 1,
             vxc_diag_nmax = kwargs.get('nbnd', 1),

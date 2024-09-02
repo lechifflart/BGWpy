@@ -254,10 +254,12 @@ class BSEFlow(Workflow):
         self.wfntask_ksh = QeBgwFlow(
             dirname = pjoin(self.dirname, '02-wfn'),
             ngkpt = self.ngkpt,
-            kshift = self.kshift,
             nbnd = self.nbnd,
             rhog_flag = True,
-            symkpt=False,
+            vxc_flag = True,    # Pierre : set this to False by default
+            vxc_diag_nmin = 1, # Pierre : start from 1 because many degeneracies
+            vxc_diag_nmax = kwargs['ibnd_max'], # Pierre : print vxc only for the bands that will corrected in GW
+            symkpt=True,
             **kwargs)
 
         self.wfntask_qsh = QeBgwFlow(
@@ -266,7 +268,7 @@ class BSEFlow(Workflow):
             kshift = self.kshift,
             qshift = self.qshift,
             nbnd = None,
-            symkpt=False,
+            symkpt=True,
             **kwargs)
 
         self.add_tasks([self.wfntask_ksh, self.wfntask_qsh])
@@ -280,7 +282,10 @@ class BSEFlow(Workflow):
                 ngkpt = self.ngkpt,
                 nbnd = self.nbnd,
                 rhog_flag = True,
-                symkpt=False,
+                vxc_flag = True,    # Pierre : set this to False by default
+                vxc_diag_nmin = kwargs['ibnd_min'], # Pierre : print vxc only for the bands that will corrected in GW
+                vxc_diag_nmax = kwargs['ibnd_max'], # Pierre : print vxc only for the bands that will corrected in GW
+                symkpt=True,
                 **kwargs)
 
             self.add_task(self.wfntask_ush)
@@ -295,7 +300,7 @@ class BSEFlow(Workflow):
             ngkpt = self.ngkpt_fi,
             kshift = self.kshift_fi,
             qshift = 3*[.0],
-            symkpt=False,
+            symkpt=True,
             **kwargs)
         
         self.wfntask_fi_qsh = QeBgwFlow(
@@ -303,7 +308,7 @@ class BSEFlow(Workflow):
             ngkpt = self.ngkpt_fi,
             kshift = self.kshift_fi,
             qshift = self.qshift_fi,
-            symkpt=False,
+            symkpt=True,
             **kwargs)
         
         self.add_tasks([self.wfntask_fi_ush, self.wfntask_fi_qsh])

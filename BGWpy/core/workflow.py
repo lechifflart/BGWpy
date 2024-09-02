@@ -87,14 +87,14 @@ class Workflow(Task):
                 #self.runscript.append('if [ -d {} ]'.format(task.dirname))
                 #self.runscript.append('then')
                 self.runscript.append('cd {}'.format(os.path.relpath(task.dirname, self.dirname)))
-                self.runscript.append('bash {}'.format(task.runscript.fname))
+                self.runscript.append('sbatch {}'.format(task.runscript.fname))
                 self.runscript.append('cd {}'.format(os.path.relpath(self.dirname, task.dirname, )))
                 #self.runscript.append('else')
                 #self.runscript.append('exit 1')
                 #self.runscript.append('fi')
 
             else:
-                self.runscript.append('bash {}'.format(task.runscript.fname))
+                self.runscript.append('sbatch {}'.format(task.runscript.fname))
 
         self.tasks.append(task)
 

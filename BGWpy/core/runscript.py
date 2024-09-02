@@ -195,5 +195,5 @@ class RunScript(Writable):
 
         return S
 
-    def run(self):
+    def run(self):      
         subprocess.call(['bash', self.fname])

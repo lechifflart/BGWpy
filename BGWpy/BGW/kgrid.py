@@ -16,11 +16,11 @@ class KgridTask(Task):
                  ngkpt = 3*[1],
                  kshift = 3*[.0],
                  qshift = 3*[.0],
-                 fft = 3*[0],
+                 fft = 3*[0],  # Pierre : default FFT grid is defined here
                  use_tr=False,
                  executable='kgrid.x',  # TODO remove executable and make bindir a global option
                  rootname='tmp.kgrid',
-                 clean_after=True,
+                 clean_after=False,  # Pierre : this removes the tmp files if True
                  dirname='',
                  **kwargs):
         """
@@ -93,7 +93,7 @@ class KgridTask(Task):
             79 * '=' + '\n\n' +
             'Could not find the executable kgrid.x\n' + 
             'Please make sure it is available for execution.\n' +
-            'On a computing cluster, you might do this my loading the module:\n' + 
+            'On a computing cluster, you might do this by loading the module:\n' + 
             '    module load berkeleygw\n' +
             "If you compiled BerkeleyGW yourself, " + 
             "make sure that the 'bin' directory\n" + 
@@ -251,7 +251,7 @@ class KgridTask(Task):
 
 def get_kpt_grid(structure, ngkpt,
                  executable='kgrid.x',  # TODO remove executable and make bindir a global option
-                 rootname='tmp.kgrid', clean_after=True, **kwargs):
+                 rootname='tmp.kgrid', clean_after=False, **kwargs):
     """
     Use kgrid.x to compute the list of kpoint and their weight.
 
@@ -348,9 +348,8 @@ def get_kpt_grid(structure, ngkpt,
     # Parse the output
     return get_kpoints(outputcontent)
 
-
 def get_kgrid_input(structure, ngkpt, kshift=[.0,.0,.0], qshift=[.0,.0,.0],
-                    fft=[0,0,0], use_tr=False, **kwargs):
+                    fft=[0.,0.,0.,], use_tr=False, **kwargs):
     """Make a kgrid.x input, using pymatgen.Structure object."""
 
     abc = np.array(structure.lattice.abc)

@@ -17,8 +17,8 @@ def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks):
         mixing_mode = 'plain',
         mixing_beta = 0.7,
         mixing_ndim = 8,
-        diagonalization = 'david',
-        diago_david_ndim = 4,
+        diagonalization = 'rmm-davidson', # Pierre : changed default to rmm-davidson to avoid memory issues
+        diago_david_ndim = 2, # Pierre : changed from 4 to 2 but not used with rmm-davidson
         diago_full_acc = True,
         )
     

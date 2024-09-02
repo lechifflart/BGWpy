@@ -40,7 +40,7 @@ class QeTask(DFTTask, IOTask):
         self.savedir = self.prefix + '.save'
 
         self.runscript['PW'] = kwargs.get('PW', 'pw.x')
-        self.runscript['PWFLAGS'] = kwargs.get('PWFLAGS', '')
+        self.runscript['PWFLAGS'] = kwargs.get('PWFLAGS', ' ')
 
     def exec_from_savedir(self):
         original = os.path.realpath(os.curdir)
@@ -52,9 +52,12 @@ class QeTask(DFTTask, IOTask):
         self.check_pseudos()
         super(QeTask, self).write()
         with self.exec_from_dirname():
-            self.input.write()
-            if not os.path.exists(self.savedir):
-                os.mkdir(self.savedir)
+            self.input.write() 
+            # Pierre : I linked the savedir
+            # if not os.path.exists(self.savedir):
+            #    os.makedirs(self.savedir, exist_ok=True)
+           
+
 
     # Yikes! I have to recopy the property. python3 would be so much better...
     @property

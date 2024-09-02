@@ -103,6 +103,7 @@ class QeWfnTask(QeTask):
         self.runscript.append('$MPIRUN $PW $PWFLAGS -in {} &> {}'.format(
                               self._input_fname, self._output_fname))
 
+
     @property
     def charge_density_fname(self):
         return self._charge_density_fname
@@ -112,7 +113,8 @@ class QeWfnTask(QeTask):
         self._charge_density_fname = value
         name = 'charge-density.hdf5' if self._use_hdf5_qe else 'charge-density.dat'
         dest = os.path.join(self.savedir, name)
-        self.update_link(value, dest)
+        # Pierre : I remove this because I link the full save directory
+        #self.update_link(value, dest)
 
     @property
     def spin_polarization_fname(self):
@@ -133,9 +135,11 @@ class QeWfnTask(QeTask):
         self._data_file_fname = value
         if self.version >= 6:
             dest = os.path.join(self.savedir, 'data-file-schema.xml')
+            pass
         else:
             dest = os.path.join(self.savedir, 'data-file.xml')
-        self.update_copy(value, dest)
+        # Pierre : I remove this because I link the full save directory
+        #self.update_copy(value, dest)
 
     def add_pseudos_copy(self):
         """
@@ -151,7 +155,8 @@ class QeWfnTask(QeTask):
         for pseudo in self.pseudos:
             source = os.path.join(sourcedir, pseudo)
             dest = os.path.join(self.savedir, pseudo)
-            self.update_copy(source, dest)
+            # Pierre : I remove this because I link the full save directory
+            #self.update_copy(source, dest)
 
     # Yikes! I have to recopy the property. python3 would be so much better...
     @property
