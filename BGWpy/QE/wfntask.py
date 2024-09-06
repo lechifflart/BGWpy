@@ -113,8 +113,8 @@ class QeWfnTask(QeTask):
         self._charge_density_fname = value
         name = 'charge-density.hdf5' if self._use_hdf5_qe else 'charge-density.dat'
         dest = os.path.join(self.savedir, name)
-        # Pierre : I remove this because I link the full save directory
-        #self.update_link(value, dest)
+        # Pierre : reverted to link the charge-density
+        self.update_link(value, dest)
 
     @property
     def spin_polarization_fname(self):
@@ -138,8 +138,8 @@ class QeWfnTask(QeTask):
             pass
         else:
             dest = os.path.join(self.savedir, 'data-file.xml')
-        # Pierre : I remove this because I link the full save directory
-        #self.update_copy(value, dest)
+        # Pierre : reverted to copy .xml
+        self.update_copy(value, dest)
 
     def add_pseudos_copy(self):
         """
@@ -155,7 +155,7 @@ class QeWfnTask(QeTask):
         for pseudo in self.pseudos:
             source = os.path.join(sourcedir, pseudo)
             dest = os.path.join(self.savedir, pseudo)
-            # Pierre : I remove this because I link the full save directory
+            # Pierre : this is deprecated with newer QE version, not needed anymore
             #self.update_copy(source, dest)
 
     # Yikes! I have to recopy the property. python3 would be so much better...

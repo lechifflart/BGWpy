@@ -53,9 +53,9 @@ class QeTask(DFTTask, IOTask):
         super(QeTask, self).write()
         with self.exec_from_dirname():
             self.input.write() 
-            # Pierre : I linked the savedir
-            # if not os.path.exists(self.savedir):
-            #    os.makedirs(self.savedir, exist_ok=True)
+            # Pierre : reverted to create the savedir
+            if not os.path.exists(self.savedir):
+               os.makedirs(self.savedir, exist_ok=True)
            
 
 
