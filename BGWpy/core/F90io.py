@@ -1,5 +1,5 @@
 """Some genering formatting functions for the input."""
-from numpy import array
+from numpy import array, double
 from collections import OrderedDict
 from .writable import Writable
 
@@ -50,7 +50,7 @@ def fortran_str(obj, quotes=True):
         return bool_str(obj)
     if '__iter__' in dir(obj):
         try:
-            return arr_str(array(obj, dtype=np.double))
+            return arr_str(array(obj, dtype=double))
         except:
             return ' '.join([fortran_str(o, quotes) for o in obj])
 
