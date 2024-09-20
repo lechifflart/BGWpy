@@ -9,7 +9,7 @@ from .qetask import BaseQePhTask
 from ..config import flavors
 
 # Public
-__all__ = ['QePhInput']
+__all__ = ['QePhInput', 'QePhTask']
 
 class QePhInput(Writable):
 
