@@ -13,9 +13,9 @@ __all__ = ['QePhInput', 'QePhTask']
 
 class QePhInput(Writable):
 
-    def __init__(self, **kwargs):
+    def __init__(self, fname, *args, **kwargs):
         
-        super(QePhInput, self).__init__(**kwargs)
+        super(QePhInput, self).__init__(fname)
         
         self.title_line = str()
         self.inputph = Namelist('inputph')
@@ -28,17 +28,17 @@ class QePhInput(Writable):
     
     def _iswavevector(self):
         """True if ldisp != .true. and qplot != .true."""
-        not_ldisp = self.inputph.ldisp != True
-        not_qplot = self.inputph.qplot != True
+        not_ldisp = self.inputph['ldisp'] != True
+        not_qplot = self.inputph['qplot'] != True
         return not_ldisp and not_qplot
     
     def _isqplot(self):
         """True if qplot == .true."""
-        return self.inputph.qplot == True
+        return self.inputph['qplot'] == True
     
     def _isnattodo(self):
         """True if nat_todo has been specified"""
-        return self.inputph.nat_todo != 0
+        return self.inputph['nat_todo'] != 0
     
     def set_variables(self, variables):
         """
@@ -74,11 +74,10 @@ class QePhInput(Writable):
             })
         """
         for key, val in variables.items():
-
             if key not in dir(self):
                 continue
             obj = getattr(self, key)
-
+            
             if isinstance(obj, Namelist):
                 obj.update(val)
             elif isinstance(obj, Card):
@@ -86,21 +85,22 @@ class QePhInput(Writable):
                 while obj:
                     obj.pop()
                 obj.extend(val[1:])
-
-
+            else:
+                setattr(self, key, val)
+    
     def __str__(self):
         
         S  = ''
-        S += fortran_str(self.title_line)
+        S += fortran_str(self.title_line) + '\n'
         S += str(self.inputph)
         
         if self._iswavevector():
-            S += fortran_str(self.xq)
+            S += fortran_str(self.xq) + '\n'
         elif self._isqplot():
             S += str(self.qpointsspecs)
         
         if self._isnattodo():
-            S += fortran_str(self.atom)
+            S += fortran_str(self.atom) + '\n'
         
         return S
 
@@ -153,28 +153,28 @@ class QePhTask(BaseQePhTask):
         
         super(QePhTask, self).__init__(dirname, **kwargs)
         
-        self.title_line = kwargs.pop('title_line')
-        
-        # Maybe let the defaults be handled by PW2BGWInput
-        
         # Input file
         defaults = dict(
-            title_line  = self.title_line,
-            ldisp = False,
-            qplot = False,
-            nat_todo = 0
+            title_line = '',
+            xq = list(),
+            inputph = dict(
+                ldisp = False,
+                qplot = False,
+                nat_todo = 0),
+            atom = list(),
         )
         
-        variables = defaults
-        # variables = dict()
-        # for key, value in defaults.items():
-        #     variables[key] = kwargs.get(key, value)
+        variables = dict()
+        for key, value in defaults.items():
+            variables[key] = kwargs.get(key, value)
+        kwargs['variables'] = variables
         
-        self.input = QePhInput(prefix=self.prefix, **variables)
+        # Construct input
+        inp = QePhInput('input_ph', **kwargs)
         
-        # Have to make sure the properties are set correctly.
-        if 'xq' in kwargs:
-            self.xq = kwargs['xq']
+        print(inp.inputph)
+        
+        self.input = inp
         
         self.input.fname = self._input_fname
 

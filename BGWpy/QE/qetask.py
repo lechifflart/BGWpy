@@ -45,7 +45,6 @@ class QeTask(IOTask):
         return exec_from_dir(os.path.join(self.dirname, self.savedir))
 
     def write(self):
-        self.check_pseudos()
         super(QeTask, self).write()
         with self.exec_from_dirname():
             self.input.write() 
@@ -77,7 +76,11 @@ class QeDFTTask(DFTTask, QeTask):
 
         self.runscript['PW'] = kwargs.get('PW', 'pw.x')
         self.runscript['PWFLAGS'] = kwargs.get('PWFLAGS', ' ')
-
+        
+    def write(self):
+        self.check_pseudos()
+        super(QeDFTTask, self).write()
+    
     # Yikes! I have to recopy the property. python3 would be so much better...
     @property
     def pseudo_dir(self):

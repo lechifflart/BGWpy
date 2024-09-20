@@ -28,7 +28,7 @@ class Qe2BgwInput(Namelist):
         qshift = kwargs.pop('qshift', 3*[.0]) 
 
         super(Qe2BgwInput, self).__init__('input_pw2bgw', *args, **kwargs)
-
+        
         # Sort the variables so that they look nice in the input file.
         prefered_order = [
             'prefix',
