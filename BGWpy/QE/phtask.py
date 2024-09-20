@@ -131,7 +131,19 @@ class QePhTask(BaseQePhTask):
         prefix : str
             Prepended to input/output filenames; must be the same
             used in the calculation of unperturbed system.
-        
+        ldisp : bool (False), optional
+            Use a wave-vector grid displaced by half a grid step
+            in each direction - meaningful only when ldisp is .true.
+            When this option is set, the q2r.x code cannot be used.
+        qplot : bool (False), optional
+            If .true. a list of q points is read from input.
+        nat_todo : int (0), optional
+            Choose the subset of atoms to be used in the linear response
+            calculation.
+        xq : list(3), float, it depends
+            The phonon wavevector, in units of 2pi/a0
+            (a0 = lattice parameter).
+            Not used if ldisp==True or qplot==True
         Properties
         ----------
         
@@ -148,13 +160,22 @@ class QePhTask(BaseQePhTask):
         # Input file
         defaults = dict(
             title_line  = self.title_line,
+            ldisp = False,
+            qplot = False,
+            nat_todo = 0
         )
         
-        variables = dict()
-        for key, value in defaults.items():
-            variables[key] = kwargs.get(key, value)
+        variables = defaults
+        # variables = dict()
+        # for key, value in defaults.items():
+        #     variables[key] = kwargs.get(key, value)
         
         self.input = QePhInput(prefix=self.prefix, **variables)
+        
+        # Have to make sure the properties are set correctly.
+        if 'xq' in kwargs:
+            self.xq = kwargs['xq']
+        
         self.input.fname = self._input_fname
 
         # Run script
