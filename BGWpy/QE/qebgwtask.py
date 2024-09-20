@@ -3,7 +3,7 @@ import os
 
 from numpy import array
 from ..core import Namelist
-from .qetask import QeTask
+from .qetask import QeDFTTask
 
 from ..config import flavors
 
@@ -101,7 +101,7 @@ class Qe2BgwInput(Namelist):
         self['wfng_dk3'] = self.kqshift[2]
 
 
-class Qe2BgwTask(QeTask):
+class Qe2BgwTask(QeDFTTask):
     """Wavefunctions convertion."""
 
     _TASK_NAME = 'PW2BGW'

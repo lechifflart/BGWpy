@@ -8,10 +8,9 @@ from ..core import MPITask, IOTask
 from ..DFT import DFTTask
 
 # Public
-__all__ = ['QeTask']
+__all__ = ['QeDFTTask','BaseQePhTask']
 
-
-class QeTask(DFTTask, IOTask):
+class QeTask(IOTask):
     """Base class for Quantum Espresso calculations."""
 
     _TAG_JOB_COMPLETED = 'JOB DONE'
@@ -35,12 +34,9 @@ class QeTask(DFTTask, IOTask):
         """
 
         super(QeTask, self).__init__(dirname, **kwargs)
-
+        
         self.prefix = kwargs['prefix']
         self.savedir = self.prefix + '.save'
-
-        self.runscript['PW'] = kwargs.get('PW', 'pw.x')
-        self.runscript['PWFLAGS'] = kwargs.get('PWFLAGS', ' ')
 
     def exec_from_savedir(self):
         original = os.path.realpath(os.curdir)
@@ -56,8 +52,31 @@ class QeTask(DFTTask, IOTask):
             # Pierre : reverted to create the savedir
             if not os.path.exists(self.savedir):
                os.makedirs(self.savedir, exist_ok=True)
-           
 
+class QeDFTTask(DFTTask, QeTask):
+    """Base class for Quantum Espresso calculations."""
+
+    def __init__(self, dirname, **kwargs):
+        """
+        Arguments
+        ---------
+
+        dirname : str
+            Directory in which the files are written and the code is executed.
+            Will be created if needed.
+
+        Keyword arguments
+        -----------------
+
+        See also:
+            BGWpy.DFT.DFTTask
+
+        """
+
+        super(QeDFTTask, self).__init__(dirname, **kwargs)
+
+        self.runscript['PW'] = kwargs.get('PW', 'pw.x')
+        self.runscript['PWFLAGS'] = kwargs.get('PWFLAGS', ' ')
 
     # Yikes! I have to recopy the property. python3 would be so much better...
     @property
@@ -74,3 +93,23 @@ class QeTask(DFTTask, IOTask):
             if 'control' in dir(self.input):
                 self.input.control['pseudo_dir'] = self._pseudo_dir
 
+class BaseQePhTask(MPITask, QeTask):
+    """Base class for Quantum Espresso phonon calculations."""
+    
+    def __init__(self, dirname, **kwargs):
+        """
+        Arguments
+        ---------
+
+        dirname : str
+            Directory in which the files are written and the code is executed.
+            Will be created if needed.
+        
+        Keyword arguments
+        -----------------
+        
+        """
+        super(BaseQePhTask, self).__init__(dirname, **kwargs)
+        
+        self.runscript['PH'] = kwargs.get('PH', 'ph.x')
+        self.runscript['PHFLAGS'] = kwargs.get('PHFLAGS', ' ')

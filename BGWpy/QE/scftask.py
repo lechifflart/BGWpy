@@ -1,14 +1,14 @@
 from __future__ import print_function
 import os
 
-from .qetask      import QeTask
+from .qetask      import QeDFTTask
 from .constructor import get_scf_input
 
 # Public
 __all__ = ['QeScfTask']
 
 
-class QeScfTask(QeTask):
+class QeScfTask(QeDFTTask):
     """Charge density calculation."""
 
     _TASK_NAME = 'SCF'
