@@ -167,10 +167,16 @@ class QePhTask(BaseQePhTask):
         variables = dict()
         for key, value in defaults.items():
             variables[key] = kwargs.get(key, value)
+        
         kwargs['variables'] = variables
         
         # Construct input
         inp = QePhInput('input_ph', **kwargs)
+        
+        # Set mandatory
+        inp.inputph.update(
+            prefix = self.prefix
+        )
         
         self.input = inp
         
@@ -190,3 +196,5 @@ class QePhTask(BaseQePhTask):
     # def wfn_fname(self, value):
     #     self._wfn_fname = value
     #     self.input['wfng_file'] = value
+    
+    
