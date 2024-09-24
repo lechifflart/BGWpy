@@ -172,8 +172,6 @@ class QePhTask(BaseQePhTask):
         # Construct input
         inp = QePhInput('input_ph', **kwargs)
         
-        print(inp.inputph)
-        
         self.input = inp
         
         self.input.fname = self._input_fname
