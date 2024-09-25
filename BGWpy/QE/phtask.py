@@ -1,12 +1,9 @@
 from __future__ import print_function
-import os
 
-from numpy import array
 from ..core import fortran_str
 from ..core import Namelist, Writable, Card
 from .qetask import BaseQePhTask
 
-from ..config import flavors
 
 # Public
 __all__ = ['QePhInput', 'QePhTask']
@@ -22,6 +19,19 @@ class QePhInput(Writable):
         self.xq = list()
         self.qpointsspecs = Card('QPOINTSSPECS', '')
         self.atom = list()
+        
+        
+        # Default settings
+        defaults = dict(
+            title_line = '',
+            xq = list(),
+            inputph = dict(
+                ldisp = False,
+                qplot = False,
+                nat_todo = 0),
+            atom = list(),
+        )
+        self.set_variables(defaults)
         
         if 'variables' in kwargs:
             self.set_variables(kwargs['variables'])
@@ -105,7 +115,7 @@ class QePhInput(Writable):
         return S
 
 
-# Daan; Base structure copied from QE2BGW task.
+# Daan ; Base structure copied from QE2BGW task.
 class QePhTask(BaseQePhTask):
     """Phonon calculation."""
 
@@ -153,33 +163,16 @@ class QePhTask(BaseQePhTask):
         
         super(QePhTask, self).__init__(dirname, **kwargs)
         
-        # Input file
-        defaults = dict(
-            title_line = '',
-            xq = list(),
-            inputph = dict(
-                ldisp = False,
-                qplot = False,
-                nat_todo = 0),
-            atom = list(),
-        )
-        
-        variables = dict()
-        for key, value in defaults.items():
-            variables[key] = kwargs.get(key, value)
-        
-        kwargs['variables'] = variables
-        
         # Construct input
         inp = QePhInput('input_ph', **kwargs)
-        
         # Set mandatory
         inp.inputph.update(
             prefix = self.prefix
         )
-        
+        # store input
         self.input = inp
         
+        # input filename
         self.input.fname = self._input_fname
 
         # Run script
