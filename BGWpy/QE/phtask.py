@@ -20,7 +20,6 @@ class QePhInput(Writable):
         self.qpointsspecs = Card('QPOINTSSPECS', '')
         self.atom = list()
         
-        
         # Default settings
         defaults = dict(
             title_line = '',
@@ -31,8 +30,10 @@ class QePhInput(Writable):
                 nat_todo = 0),
             atom = list(),
         )
+        
         # Set default variables
         self.set_variables(defaults)
+        
         # Override from kwargs
         if 'variables' in kwargs:
             self.set_variables(kwargs['variables'])
@@ -166,6 +167,7 @@ class QePhTask(BaseQePhTask):
         
         # Construct input
         inp = QePhInput('input_ph', **kwargs)
+        
         # Set mandatory
         inp.inputph.update(
             prefix = self.prefix
