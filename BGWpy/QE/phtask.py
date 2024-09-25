@@ -122,6 +122,14 @@ class QePhInput(Writable):
             S += fortran_str(self.atom) + '\n'
         
         return S
+    
+    _title_line = str()
+    @property
+    def title_line(self):
+        return self._title_line
+    @title_line.setter
+    def title_line(self, value):
+        self._title_line = value.strip().replace('\n','')
 
 
 # Daan ; Base structure copied from QE2BGW task.
