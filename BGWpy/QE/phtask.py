@@ -110,7 +110,7 @@ class QePhInput(Writable):
     def __str__(self):
         
         S  = ''
-        S += fortran_str(self.title_line) + '\n'
+        S += fortran_str(self.title_line, False) + '\n'
         S += str(self.inputph)
         
         if self._iswavevector():
