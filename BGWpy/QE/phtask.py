@@ -123,6 +123,8 @@ class QePhInput(Writable):
         
         return S
     
+    # Daan ; Input sanitization could be globally implemented using a Line-of-input object
+    # instead of just str. This would mean not having to do this property/setter per str variable.
     _title_line = str()
     @property
     def title_line(self):
