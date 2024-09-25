@@ -96,7 +96,6 @@ class QePhInput(Writable):
             if key not in dir(self):
                 continue
             obj = getattr(self, key)
-            
             if isinstance(obj, Namelist):
                 obj.update(val)
             elif isinstance(obj, Card):
