@@ -30,11 +30,18 @@ class QePhInput(Writable):
                 nat_todo = 0),
             atom = list(),
         )
-        
-        # Set default variables
+        # Ensure all default values are set!
+        # If kwargs specifies an inputph dict with ldisp, qplot or nat_todo missing
+        # the checks in __str__ would fail as they would not be set in self.inputph
         self.set_variables(defaults)
         
-        # Override from kwargs
+        # Override default from kwargs
+        variables = defaults
+        for key, value in defaults.items():
+            variables[key] = kwargs.get(key, value)
+        self.set_variables(variables)
+        
+        # Alternative method for entering variables.
         if 'variables' in kwargs:
             self.set_variables(kwargs['variables'])
     
