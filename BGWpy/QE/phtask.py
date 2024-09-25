@@ -31,8 +31,9 @@ class QePhInput(Writable):
                 nat_todo = 0),
             atom = list(),
         )
+        # Set default variables
         self.set_variables(defaults)
-        
+        # Override from kwargs
         if 'variables' in kwargs:
             self.set_variables(kwargs['variables'])
     
@@ -189,5 +190,3 @@ class QePhTask(BaseQePhTask):
     # def wfn_fname(self, value):
     #     self._wfn_fname = value
     #     self.input['wfng_file'] = value
-    
-    
