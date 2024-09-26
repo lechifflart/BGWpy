@@ -55,6 +55,8 @@ class AbsorptionTask(BGWTask):
             Path to the bsexmat file produced by kernel.
         eqp_fname : str
             Path to either eqp0.dat or eqp1.dat file produced by sigma.
+        use_operator : str (use_velocity, use_momentum, use_dos)
+            How to calculate optical transition probabilities.
         extra_lines : list, optional
             Any other lines that should appear in the input file.
         extra_variables : dict, optional
@@ -70,6 +72,7 @@ class AbsorptionTask(BGWTask):
             kwargs['nbnd_cond_co'],
             kwargs['nbnd_val_fi'],
             kwargs['nbnd_cond_fi'],
+            kwargs['use_operator'],
             *kwargs.get('extra_lines',[]),
             **kwargs.get('extra_variables',{}))
 
@@ -200,6 +203,19 @@ class AbsorptionTask(BGWTask):
     def eqp_fname(self, value):
         self._eqp_fname = value
         self.update_link(value, 'eqp_co.dat')
+    
+    @property
+    def use_operator(self):
+        return self._use_operator
+    
+    @use_operator.setter
+    def use_operator(self, value):
+        options = ['use_velocity', 'use_momentum', 'use_dos']
+        if value in options:
+            self._use_operator = value
+        else:
+            raise ValueError('{0} is not a valid option. Please choose from {1}'.format(value, options))
+        
 
     def write(self):
         super(AbsorptionTask, self).write()
