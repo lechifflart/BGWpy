@@ -77,11 +77,13 @@ class AbsorptionTask(BGWTask):
             **kwargs.get('extra_variables',{}))
 
         self.input.fname = self._input_fname
-
+        
+        self.use_operator = kwargs['use_operator']
+        
         # Run script
         self.wfn_co_fname = kwargs['wfn_co_fname']
         self.wfn_fi_fname = kwargs['wfn_fi_fname']
-        if 'wfnq_fi_fname' in kwargs:
+        if self.use_operator == 'use_velocity':
             self.wfnq_fi_fname = kwargs['wfnq_fi_fname']
 
         self.eps0mat_fname = kwargs['eps0mat_fname']
@@ -94,6 +96,8 @@ class AbsorptionTask(BGWTask):
             self.bsexmat_fname = kwargs['bsexmat_fname']
 
         self.eqp_fname = kwargs['eqp_fname']
+        
+        
 
         ex = 'absorption.cplx.x' if self._flavor_complex else 'absorption.real.x'
         self.runscript['ABSORPTION'] = ex
