@@ -110,7 +110,7 @@ class KernelInput(BasicInputFile):
 
 class AbsorptionInput(BasicInputFile):
 
-    def __init__(self, nbnd_val_co, nbnd_cond_co, nbnd_val_fi, nbnd_cond_fi,
+    def __init__(self, nbnd_val_co, nbnd_cond_co, nbnd_val_fi, nbnd_cond_fi, use_operator,
                  *keywords, **variables):
 
         all_variables = OrderedDict([
@@ -122,7 +122,9 @@ class AbsorptionInput(BasicInputFile):
             ])
 
         all_variables.update(variables)
-
+        
+        keywords = (use_operator, *keywords)
+        
         super(AbsorptionInput, self).__init__(all_variables, keywords)
 
 

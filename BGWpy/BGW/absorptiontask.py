@@ -55,6 +55,8 @@ class AbsorptionTask(BGWTask):
             Path to the bsexmat file produced by kernel.
         eqp_fname : str
             Path to either eqp0.dat or eqp1.dat file produced by sigma.
+        use_operator : str (use_velocity, use_momentum, use_dos)
+            How to calculate optical transition probabilities.
         extra_lines : list, optional
             Any other lines that should appear in the input file.
         extra_variables : dict, optional
@@ -70,15 +72,18 @@ class AbsorptionTask(BGWTask):
             kwargs['nbnd_cond_co'],
             kwargs['nbnd_val_fi'],
             kwargs['nbnd_cond_fi'],
+            kwargs['use_operator'],
             *kwargs.get('extra_lines',[]),
             **kwargs.get('extra_variables',{}))
 
         self.input.fname = self._input_fname
-
+        
+        self.use_operator = kwargs['use_operator']
+        
         # Run script
         self.wfn_co_fname = kwargs['wfn_co_fname']
         self.wfn_fi_fname = kwargs['wfn_fi_fname']
-        if 'wfnq_fi_fname' in kwargs: # Daan ; wfnq is not used in use_momentum or use_dos calculations
+        if self.use_operator == 'use_velocity':
             self.wfnq_fi_fname = kwargs['wfnq_fi_fname']
 
         self.eps0mat_fname = kwargs['eps0mat_fname']
@@ -91,6 +96,8 @@ class AbsorptionTask(BGWTask):
             self.bsexmat_fname = kwargs['bsexmat_fname']
 
         self.eqp_fname = kwargs['eqp_fname']
+        
+        
 
         ex = 'absorption.cplx.x' if self._flavor_complex else 'absorption.real.x'
         self.runscript['ABSORPTION'] = ex
@@ -200,6 +207,19 @@ class AbsorptionTask(BGWTask):
     def eqp_fname(self, value):
         self._eqp_fname = value
         self.update_link(value, 'eqp_co.dat')
+    
+    @property
+    def use_operator(self):
+        return self._use_operator
+    
+    @use_operator.setter
+    def use_operator(self, value):
+        options = ['use_velocity', 'use_momentum', 'use_dos']
+        if value in options:
+            self._use_operator = value
+        else:
+            raise ValueError('{0} is not a valid option. Please choose from {1}'.format(value, options))
+        
 
     def write(self):
         super(AbsorptionTask, self).write()
