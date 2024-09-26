@@ -123,7 +123,7 @@ class AbsorptionInput(BasicInputFile):
 
         all_variables.update(variables)
         
-        keywords = keywords.append(use_operator)
+        keywords = (use_operator, *keywords)
         
         super(AbsorptionInput, self).__init__(all_variables, keywords)
 
