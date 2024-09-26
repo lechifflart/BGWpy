@@ -41,7 +41,7 @@ class AbsorptionTask(BGWTask):
             Path to the wavefunction file (coarse grid) produced by pw2bgw.
         wfn_fi_fname : str
             Path to the wavefunction file (fine grid) produced by pw2bgw.
-        wfnq_fi_fname : str
+        wfnq_fi_fname : str, optional
             Path to the q-shifted wavefunction file (fine grid) produced by pw2bgw.
         eps0mat_fname : str
             Path to the eps0mat file produced by epsilon.
@@ -78,7 +78,8 @@ class AbsorptionTask(BGWTask):
         # Run script
         self.wfn_co_fname = kwargs['wfn_co_fname']
         self.wfn_fi_fname = kwargs['wfn_fi_fname']
-        self.wfnq_fi_fname = kwargs['wfnq_fi_fname']
+        if 'wfnq_fi_fname' in kwargs: # Daan ; wfnq is not used in use_momentum or use_dos calculations
+            self.wfnq_fi_fname = kwargs['wfnq_fi_fname']
 
         self.eps0mat_fname = kwargs['eps0mat_fname']
         self.epsmat_fname = kwargs['epsmat_fname']
