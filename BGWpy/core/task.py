@@ -226,27 +226,52 @@ class MPITask(Task):
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
-
+        
         self.mpirun = default_mpi['mpirun']
         self.nproc_flag = default_mpi['nproc_flag']
         self.nproc_per_node_flag = default_mpi['nproc_per_node_flag']
         self.nproc = default_mpi['nproc']
         self.nproc_per_node = default_mpi['nproc_per_node']
-
+        
+        # Header
+        header = []
+        pre_header = '#SBATCH'
+        # First entry is number of nodes and exclusive flag
+        if 'mpirun_nodes' in kwargs:
+            exclusive = '--exclusive' if kwargs.get('mpirun_exclusive',False) else ''
+            header.append('{0} -N {1} {2}'.format(pre_header, kwargs['mpirun_nodes'], exclusive))
+        # then add additional arguments
+        pre_key = 'mpirun_'
+        keys = ('jobname','partition','output','error','time')
+        flags = ('-J','-p','-t','-o','-e')
+        for key, flag in zip(keys, flags):
+            key = pre_key + key
+            if key in kwargs:
+                header.append('{0} {1} {2}'.format(pre_header, flag, kwargs[key]))
+        # Add entries if any were added
+        if header:
+            self.runscript.header = header + self.runscript.header
+        
+        # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
                     'nproc_per_node', 'nproc_per_node_flag',
                     'nodes', 'nodes_flag'):
                    
             if key in kwargs:
                 setattr(self, key, kwargs[key])
-
+        
+        
+        
+        
+        
         # This is mostly for backward compatibility
         if 'mpirun_n' in kwargs:
             self.mpirun_n = kwargs['mpirun_n']
-
+    
+    
     def _declare_mpirun(self):
         self.runscript['MPIRUN'] = self.mpirun_variable
-
+    
     @property
     def mpirun_variable(self):
         if not self.mpirun:

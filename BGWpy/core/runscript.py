@@ -74,7 +74,7 @@ class RunScript(Writable):
             self.main.append(main)
         elif main is not None:
             self.main.extend(main)
-
+        
         self.first_line = kwargs.get('first_line',
                                      default_runscript['first_line'])
 
