@@ -236,17 +236,18 @@ class MPITask(Task):
         # Header
         header = []
         pre_header = '#SBATCH'
+        # First entry is number of nodes and exclusive flag
+        if 'mpirun_nodes' in kwargs:
+            exclusive = '--exclusive' if kwargs.get('mpirun_exclusive',False) else ''
+            header.append('{0} -N {1} {2}'.format(pre_header, kwargs['mpirun_nodes'], exclusive))
+        # then add additional arguments
         pre_key = 'mpirun_'
-        keys = ('jobname','partition','time','output','error')
+        keys = ('jobname','partition','output','error','time')
         flags = ('-J','-p','-t','-o','-e')
         for key, flag in zip(keys, flags):
             key = pre_key + key
             if key in kwargs:
                 header.append('{0} {1} {2}'.format(pre_header, flag, kwargs[key]))
-        # exclusive flag
-        if 'mpirun_nodes' in kwargs:
-            exclusive = '--exclusive' if kwargs.get('mpirun_exclusive',False) else ''
-            header.append('{0} -N {1} {2}'.format(pre_header, kwargs['mpirun_nodes'], exclusive))
         # Add entries if any were added
         if header:
             self.runscript.header = header + self.runscript.header
