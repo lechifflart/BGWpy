@@ -243,7 +243,7 @@ class MPITask(Task):
         # then add additional arguments
         pre_key = 'mpirun_'
         keys = ('jobname','partition','output','error','time')
-        flags = ('-J','-p','-t','-o','-e')
+        flags = ('-J','-p','-o','-e','-t')
         for key, flag in zip(keys, flags):
             key = pre_key + key
             if key in kwargs:
