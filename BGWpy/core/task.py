@@ -234,7 +234,7 @@ class MPITask(Task):
         self.nproc_per_node = default_mpi['nproc_per_node']
         
         # Header
-        header = self.runscript.header
+        header = []
         pre_header = '#SBATCH'
         pre_key = 'mpirun_'
         keys = ('jobname','partition','time','output','error')
@@ -247,6 +247,9 @@ class MPITask(Task):
         if 'mpirun_nodes' in kwargs:
             exclusive = '--exclusive' if kwargs.get('mpirun_exclusive',False) else ''
             header.append('{0} -N {1} {2}'.format(pre_header, kwargs['mpirun_nodes'], exclusive))
+        # Add entries if any were added
+        if header:
+            self.runscript.header = header + self.runscript.header
         
         # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
