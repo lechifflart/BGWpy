@@ -226,7 +226,7 @@ class MPITask(Task):
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
-        print('Test')
+        
         self.mpirun = default_mpi['mpirun']
         self.nproc_flag = default_mpi['nproc_flag']
         self.nproc_per_node_flag = default_mpi['nproc_per_node_flag']
@@ -246,6 +246,7 @@ class MPITask(Task):
 
     def _declare_mpirun(self):
         self.runscript['MPIRUN'] = self.mpirun_variable
+    
     
     def test(self):
         """
