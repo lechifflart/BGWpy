@@ -2,6 +2,7 @@
 from .default_configuration import (
     default_mpi,
     default_runscript,
+    default_wlm,
     flavors,
     )
 
