@@ -238,13 +238,10 @@ class MPITask(Task):
         if pre_header:
             header = []
             pre_key = 'mpirun_'
-            keys = ('jobname','partition','output','error','time')
-            flags = ('-J','-p','-o','-e','-t')
+            keys = ('jobname','nodes','time')
+            option_keys = ('option_jobname', 'option_nodes', 'option_time')
+            flags = (default_wlm[key] for key in option_keys)
             # First entry is number of nodes and exclusive flag
-            if 'mpirun_nodes' in kwargs:
-                exclusive = '--exclusive' if kwargs.get('mpirun_exclusive',False) else ''
-                header.append('{0} -N {1} {2}'.format(pre_header, kwargs['mpirun_nodes'], exclusive))
-            
             for key, flag in zip(keys, flags):
                 key = pre_key + key
                 if key in kwargs:
