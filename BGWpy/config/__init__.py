@@ -42,7 +42,7 @@ if os.path.exists(config_file):
     if sk in config:
         for key in keys:
             if key in config[sk]:
-                default_wlm[jobtag] = config[sk][key]
+                default_wlm[key] = config[sk][key]
 
     sk = 'runscript'
     keys = ('first_line', 'header', 'footer')
