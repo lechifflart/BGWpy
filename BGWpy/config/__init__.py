@@ -2,6 +2,7 @@
 from .default_configuration import (
     default_mpi,
     default_runscript,
+    default_wlm,
     flavors,
     )
 
@@ -35,6 +36,15 @@ if os.path.exists(config_file):
         for key in keys:
             if key in config[sk]:
                 default_mpi[key] = config[sk][key]
+
+    sk = 'WLM'
+    keys = ('jobtag', 
+            'option_jobname', 'option_time', 'option_nodes',
+            'flags_jobname', 'flags_time', 'flags_nodes',)
+    if sk in config:
+        for key in keys:
+            if key in config[sk]:
+                default_wlm[key] = config[sk][key]
 
     sk = 'runscript'
     keys = ('first_line', 'header', 'footer')
