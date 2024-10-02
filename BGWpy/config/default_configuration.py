@@ -12,7 +12,10 @@ default_mpi = dict(
     )
 
 default_wlm = dict(
-    jobtag = '',
+    jobtag = '#SBATCH',
+    option_jobname = '-J' ,
+    option_time = '-t',
+    option_nodes = '-N',
 )
 
 default_runscript = dict(
