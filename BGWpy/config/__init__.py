@@ -38,7 +38,9 @@ if os.path.exists(config_file):
                 default_mpi[key] = config[sk][key]
 
     sk = 'WLM'
-    keys = ('jobtag', 'option_jobname', 'option_time', 'option_nodes')
+    keys = ('jobtag', 
+            'option_jobname', 'option_time', 'option_nodes',
+            'flags_jobname', 'flags_time', 'flags_nodes',)
     if sk in config:
         for key in keys:
             if key in config[sk]:
