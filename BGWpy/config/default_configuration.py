@@ -11,6 +11,10 @@ default_mpi = dict(
     nodes_flag = None,
     )
 
+default_wlm = dict(
+    jobtag = '',
+)
+
 default_runscript = dict(
     first_line = '#!/bin/bash',
     header = [],

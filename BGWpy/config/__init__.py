@@ -36,6 +36,13 @@ if os.path.exists(config_file):
             if key in config[sk]:
                 default_mpi[key] = config[sk][key]
 
+    sk = 'WLM'
+    keys = ('jobtag',)
+    if sk in config:
+        for key in keys:
+            if key in config[sk]:
+                default_wlm[jobtag] = config[sk][key]
+
     sk = 'runscript'
     keys = ('first_line', 'header', 'footer')
     if sk in config:
