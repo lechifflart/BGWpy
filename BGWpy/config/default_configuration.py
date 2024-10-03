@@ -11,6 +11,16 @@ default_mpi = dict(
     nodes_flag = None,
     )
 
+default_wlm = dict(
+    jobtag = '#SBATCH',
+    option_jobname = '-J',
+    option_time = '-t',
+    option_nodes = '-N',
+    flags_jobname = '',
+    flags_time = '',
+    flags_nodes = '',
+)
+
 default_runscript = dict(
     first_line = '#!/bin/bash',
     header = [],
