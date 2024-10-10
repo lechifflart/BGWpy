@@ -113,9 +113,8 @@ class Task(object):
         if not target:
             self.remove_link(dest)
             return
-
-        reltarget = os.path.relpath(
-            target, os.path.join(self.dirname, os.path.dirname(dest)))
+	 
+        reltarget = os.path.relpath(target, os.path.realpath(self.dirname))
 
         for link in self.runscript.links:
             if link[1] == dest:
