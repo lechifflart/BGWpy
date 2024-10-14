@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 64",
+requires = ["setuptools >= 64", "setuptools-scm",
             "numpy >= 1.6",
             "pymatgen >= 2021"]
 build-backend = "setuptools.build_meta"
@@ -11,6 +11,7 @@ version = '3.2.3'
 description = 'Interface BerkeleyGW flows in python.'
 authors = [{name = 'Gabriel Antonius', email = 'gabriel.antonius@gmail.com'}]
 readme = 'README.md'
+dynamic = ['scripts']
 
 [project.urls]
 Repository = 'https://github.com/BerkeleyGW/BGWpy'
@@ -22,6 +23,5 @@ include = ['data/structures/*', 'data/pseudos/*']
 [tool.setuptools.package-data]
 config = ['config/BGWpyrc']
 
-[tool.setuptools.scripts.find]
-where = ['BGWpy/scripts/*.py']
-exclude = ['**/__init__.py']
+[tool.setuptools.dynamic]
+entry-points =  {file = ['BGWpy/scripts/BGWpy_make_config_file.py']}
