@@ -11,7 +11,7 @@ version = '3.2.3'
 description = 'Interface BerkeleyGW flows in python.'
 authors = [{name = 'Gabriel Antonius', email = 'gabriel.antonius@gmail.com'}]
 readme = 'README.md'
-dynamic = ['scripts']
+scripts = ['BGWpy/scripts/BGWpy_make_config_file.py']
 
 [project.urls]
 Repository = 'https://github.com/BerkeleyGW/BGWpy'
@@ -23,5 +23,3 @@ include = ['data/structures/*', 'data/pseudos/*']
 [tool.setuptools.package-data]
 config = ['config/BGWpyrc']
 
-[tool.setuptools.dynamic]
-entry-points =  {file = ['BGWpy/scripts/BGWpy_make_config_file.py']}
