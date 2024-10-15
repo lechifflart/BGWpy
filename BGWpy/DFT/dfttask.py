@@ -82,9 +82,13 @@ class DFTTask(MPITask):
         """
 
         symkpt = kwargs.get('symkpt', True)
+        automatic = kwargs.get('autokpt', False)
 
         if 'ngkpt' in kwargs:
-            if symkpt:
+            if automatic:
+                kpts, wtks = kwargs['ngkpt'], kwargs.get('kshift',[0,0,0])
+                wtks = ' '.join(map(str,wtks))
+            elif symkpt:
                 kpts, wtks = self.kgridtask.get_kpoints()
             else:
                 kpts, wtks = self.kgridtask.get_kpt_grid_nosym()
