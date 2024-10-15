@@ -145,11 +145,14 @@ class PWscfInput(Writable):
 
         return S
 
-    def set_kpoints_crystal(self, kpts, wtks):
-        self.k_points.option = 'crystal'
-        self.k_points.append(len(kpts))
-        for k, w in zip(kpts, wtks):
-            self.k_points.append(list(k) + [w])
+    def set_kpoints_crystal(self, kpts, wtks, option):
+        self.k_points.option = option
+        if option == 'crystal':
+            self.k_points.append(len(kpts))
+            for k, w in zip(kpts, wtks):
+                self.k_points.append(list(k) + [w])
+        elif option == 'automatic':
+            self.k_points.append(kpts + wtks)
 
     @property
     def structure(self):

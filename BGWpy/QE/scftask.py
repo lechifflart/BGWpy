@@ -85,6 +85,7 @@ class QeScfTask(QeTask):
             kwargs['ecutwfc'],
             kpts,
             wtks,
+            kwargs.get('autokpt',False)
             )
 
         if 'variables' in kwargs:
