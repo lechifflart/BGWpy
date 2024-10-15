@@ -75,6 +75,7 @@ class QeScfTask(QeTask):
         super(QeScfTask, self).__init__(dirname, **kwargs)
 
         kpts, wtks = self.get_kpts(**kwargs)
+        option = 'automatic' if kwargs.get('autokpt',False) else 'crystal'
         
         # Input file
         self.input = get_scf_input(
@@ -85,7 +86,7 @@ class QeScfTask(QeTask):
             kwargs['ecutwfc'],
             kpts,
             wtks,
-            kwargs.get('autokpt',False)
+            option
             )
 
         if 'variables' in kwargs:
