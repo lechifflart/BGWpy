@@ -94,7 +94,7 @@ class DFTTask(MPITask):
                 kpts, wtks = self.kgridtask.get_kpt_grid_nosym()
         else:
             kpts, wtks = kwargs['kpts'], kwargs['wtks']
-
+        print(kpts, wtks)
         return kpts, wtks
 
     def check_pseudos(self):
