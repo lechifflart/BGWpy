@@ -1,7 +1,7 @@
 from .pwscfinput import PWscfInput
 
 
-def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks):
+def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, option):
     """Construct a Quantum Espresso scf input."""
     inp = PWscfInput()
     
@@ -23,7 +23,7 @@ def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks):
         )
     
     inp.system['ecutwfc'] = ecutwfc,
-    inp.set_kpoints_crystal(kpts, wtks)
+    inp.set_kpoints_crystal(kpts, wtks, option)
     inp.structure = structure
     inp.pseudos = pseudos
 

@@ -113,7 +113,7 @@ class KgridTask(Task):
                     print(E)
         if self.new_dir:
             try:
-                os.removedirs(dirname) # Daan : is this intentionally failing? dirname is not defined, self.dirname is.
+                os.removedirs(self.dirname)
             except Exception as E:
                 print(E)
 

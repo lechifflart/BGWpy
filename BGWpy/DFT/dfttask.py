@@ -82,15 +82,17 @@ class DFTTask(MPITask):
         """
 
         symkpt = kwargs.get('symkpt', True)
+        automatic = kwargs.get('autokpt', False)
 
         if 'ngkpt' in kwargs:
-            if symkpt:
+            if automatic:
+                kpts, wtks = kwargs['ngkpt'], kwargs.get('kshift',[0,0,0])
+            elif symkpt:
                 kpts, wtks = self.kgridtask.get_kpoints()
             else:
                 kpts, wtks = self.kgridtask.get_kpt_grid_nosym()
         else:
             kpts, wtks = kwargs['kpts'], kwargs['wtks']
-
         return kpts, wtks
 
     def check_pseudos(self):
