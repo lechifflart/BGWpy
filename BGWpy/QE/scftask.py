@@ -51,12 +51,15 @@ class QeScfTask(QeTask):
             Absolute shift of the k-points grid along each direction.
         symkpt : bool (True), optional
             Use symmetries for the k-point grid generation.
+        autokpt : bool (False), optional
+            Use automatic kpoints by QE for the k-point grid generation.
+            Supply the kpoints using `ngkpt` and the shift using `kshift`.
         kpts : 2D list(nkpt,3), float, optional
             List of k-points.
             K-points are either specified using ngkpt or using kpts and wtks.
         wtks : list(nkpt), float, optional
             Weights of each k-point.
-
+        
 
         Properties
         ----------
