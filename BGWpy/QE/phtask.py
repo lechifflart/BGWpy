@@ -17,9 +17,8 @@ class QePhInput(Writable):
         self.title_line = str()
         self.inputph = Namelist('inputph')
         self.xq = list()
-        self.qpointsspecs = Card('QPOINTSSPECS', '')
+        self.qpointsspecs = Card('', '', quotes=False)
         self.atom = list()
-        
         # Default settings
         defaults = dict(
             title_line = '',
@@ -39,12 +38,37 @@ class QePhInput(Writable):
         variables = defaults
         for key, value in defaults.items():
             variables[key] = kwargs.get(key, value)
+        # Set amass(i)
+        if 'amass' in kwargs:
+            amass = kwargs['amass']
+            for [index, mass] in amass:
+                key = 'amass({0})'.format(int(index))
+                variables['inputph'][key] = mass
+        # Other inputph
+        keys = ['qplot', 'ldisp', 'nq1','nq2','nq3', 
+                'asr', 'nogg', 'tr2_ph', 'fildyn', 'reduce_io']
+        for key in keys:
+            if key in kwargs:
+                variables['inputph'][key] = kwargs.get(key)
         self.set_variables(variables)
+        
+        # Set qPointsSpecs
+        if self._isqplot():
+            # Add number of qpoints to qPointsSpecs
+            nqs = len( self.xq )
+            self.qpointsspecs.append(nqs)
+            # default value of 1 for the weights.
+            nq = kwargs.get('nq',[1]*nqs)
+            if len(nq) != nqs:
+                raise ValueError('Not enough weights supplied in nq.')
+            # Add points and weights to qPointsSpecs
+            for qpoint, w in zip(self.xq, nq):
+                self.qpointsspecs.append(list(qpoint) + [int(w)])
         
         # Alternative method for entering variables.
         if 'variables' in kwargs:
             self.set_variables(kwargs['variables'])
-    
+        
     def _iswavevector(self):
         """True if ldisp != .true. and qplot != .true."""
         not_ldisp = self.inputph['ldisp'] != True
@@ -172,6 +196,12 @@ class QePhTask(BaseQePhTask):
             The phonon wavevector, in units of 2pi/a0
             (a0 = lattice parameter).
             Not used if ldisp==True or qplot==True
+        xq : list(N,3), float, it depends
+            q-point coordinates; used only with ldisp==True and qplot==True.
+            The phonon wavevector, in units of 2pi/a0 (a0 = lattice parameter).
+        nq : list(1), int, it depends
+            The weight of the q-point; the meaning of nq depends on 
+            the flags q2d and q_in_band_form.
         Properties
         ----------
         

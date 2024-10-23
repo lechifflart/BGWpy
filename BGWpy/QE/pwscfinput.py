@@ -168,16 +168,16 @@ class PWscfInput(Writable):
         self.system['nat'] = structure.num_sites
         self.system['ntyp'] = structure.ntypesp
 
+        
         # Set cell parameters
         self.cell_parameters.option = 'angstrom'
         #for vec in structure.lattice_vectors():
         for vec in structure.lattice.matrix:
             self.cell_parameters.append(np.round(vec, 8))
-
-        # Set atomic species
-        types_of_specie = sorted(set(structure.species), key=structure.species.index)
-        for element in types_of_specie:
-            self.atomic_species.append([element.symbol, float(element.atomic_mass)])
+    
+        # Set atomic label and mass
+        for element, label in zip(structure.species, structure.labels):
+            self.atomic_species.append([label, float(element.atomic_mass)])
 
         if self.pseudos:
             for i, pseudo in enumerate(self.pseudos):
@@ -185,12 +185,12 @@ class PWscfInput(Writable):
 
         # Set atomic positions
         self.atomic_positions.option = 'crystal'
-        for site in structure.sites:
+        for site, label in zip(structure.sites, structure.labels):
             frac_coords = list(site.frac_coords)
             for i in range(3):
                 if abs(frac_coords[i]) > .5:
                     frac_coords[i] += -1. * np.sign(frac_coords[i])
-            self.atomic_positions.append([site.specie.symbol] + frac_coords)
+            self.atomic_positions.append([label] + frac_coords)
 
     @property
     def pseudos(self):
@@ -207,4 +207,3 @@ class PWscfInput(Writable):
         for symbol, mass, pseudo in self.atomic_species:
             if symbol.lower() not in pseudo.lower():
                 warnings.warn('Suspicious pseudo name for atom {}: {}'.format(symbol, pseudo))
-
