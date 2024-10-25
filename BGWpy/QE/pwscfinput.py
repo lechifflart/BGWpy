@@ -174,15 +174,20 @@ class PWscfInput(Writable):
         #for vec in structure.lattice_vectors():
         for vec in structure.lattice.matrix:
             self.cell_parameters.append(np.round(vec, 8))
-    
+        
         # Set atomic label and mass
-        for element, label in zip(structure.species, structure.labels):
-            self.atomic_species.append([label, float(element.atomic_mass)])
-
+        species_label = sorted(set(structure.labels), key=structure.labels.index)
+        for label in species_label:
+            species = structure.species[ structure.labels.index(label) ]
+            # Quantum Espresso does not allow for labels of length > 3
+            if len(label) > 3:
+                warnings.warn('Label length of atom `{label}` cannot exceed 3 characters!'.format(label))
+            self.atomic_species.append([label, float(species.atomic_mass)])
+        
         if self.pseudos:
-            for i, pseudo in enumerate(self.pseudos):
+            for ii, pseudo in enumerate(self.pseudos):
                 self.atomic_species[i].append(pseudo)
-
+        
         # Set atomic positions
         self.atomic_positions.option = 'crystal'
         for site, label in zip(structure.sites, structure.labels):
@@ -204,6 +209,11 @@ class PWscfInput(Writable):
                 self.atomic_species[i].append(pseudo)
 
     def check_pseudos_names(self):
-        for symbol, mass, pseudo in self.atomic_species:
+        species_info = [ len(row)==3 for row in self.atomic_species ]
+        if not any(species_info):
+            raise Exception('Cannot check pseudos if they have not been set!')
+        if any(species_info) and not all(species_info):
+            raise Exception('Only some pseudos have been set!')
+        for symbol, _, pseudo in self.atomic_species:
             if symbol.lower() not in pseudo.lower():
                 warnings.warn('Suspicious pseudo name for atom {}: {}'.format(symbol, pseudo))

@@ -46,7 +46,8 @@ class QePhInput(Writable):
                 variables['inputph'][key] = mass
         # Other inputph
         keys = ['qplot', 'ldisp', 'nq1','nq2','nq3', 
-                'asr', 'nogg', 'tr2_ph', 'fildyn', 'reduce_io']
+                'asr', 'nogg', 'tr2_ph', 'fildyn', 'reduce_io',
+                'electron_phonon']
         for key in keys:
             if key in kwargs:
                 variables['inputph'][key] = kwargs.get(key)
