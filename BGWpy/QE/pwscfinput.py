@@ -163,12 +163,6 @@ class PWscfInput(Writable):
         """A pymatgen.Structure object."""
         self._structure = structure
 
-        # Set system specifications
-        self.system['ibrav'] = 0
-        self.system['nat'] = structure.num_sites
-        self.system['ntyp'] = structure.ntypesp
-
-        
         # Set cell parameters
         self.cell_parameters.option = 'angstrom'
         #for vec in structure.lattice_vectors():
@@ -182,11 +176,18 @@ class PWscfInput(Writable):
             # Quantum Espresso does not allow for labels of length > 3
             if len(label) > 3:
                 warnings.warn('Label length of atom `{label}` cannot exceed 3 characters!'.format(label))
-            self.atomic_species.append([label, float(species.atomic_mass)])
+            self.atomic_species.append([label, float(species.atomic_mass), ''])
         
         if self.pseudos:
             for ii, pseudo in enumerate(self.pseudos):
-                self.atomic_species[i].append(pseudo)
+                self.atomic_species[ii][2] = pseudo
+        
+        # Set system specifications
+        self.system['ibrav'] = 0
+        self.system['nat'] = structure.num_sites
+        self.system['ntyp'] = len(species_label)
+
+        
         
         # Set atomic positions
         self.atomic_positions.option = 'crystal'
@@ -205,8 +206,10 @@ class PWscfInput(Writable):
     def pseudos(self, pseudos):
         self._pseudos = pseudos
         if self.atomic_species:
-            for i, pseudo in enumerate(pseudos):
-                self.atomic_species[i].append(pseudo)
+            if len(self.atomic_species) != len(pseudos):
+                warnings.warn('Number of labelled atoms does not match number of pseudos!')
+            for [ii, pseudo], _ in zip(enumerate(pseudos), self.atomic_species):
+                self.atomic_species[ii][2] = pseudo
 
     def check_pseudos_names(self):
         species_info = [ len(row)==3 for row in self.atomic_species ]
