@@ -171,7 +171,7 @@ class RunScript(Writable):
         for name, value in self.variables.items():
             value = self._get_quoted_string(value)
             S += '{}={}\n'.format(name, value)
-
+        
         if self.links:
             S += '\n'
             for target, dest in self.links:

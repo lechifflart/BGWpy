@@ -116,13 +116,14 @@ class Task(object):
 
         reltarget = os.path.relpath(
             target, os.path.join(self.dirname, os.path.dirname(dest)))
-
+        
         for link in self.runscript.links:
             if link[1] == dest:
                 link[0] = reltarget
                 break
         else:
             self.runscript.add_link(reltarget, dest)
+        
 
     def remove_link(self, dest):
         """Remove a link from the name of the destination."""

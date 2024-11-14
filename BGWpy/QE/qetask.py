@@ -37,6 +37,7 @@ class QeTask(IOTask):
         
         self.prefix = kwargs['prefix']
         self.savedir = self.prefix + '.save'
+        self.linked_savedir = kwargs.get('linked_savedir', None)
 
     def exec_from_savedir(self):
         original = os.path.realpath(os.curdir)
@@ -45,12 +46,18 @@ class QeTask(IOTask):
         return exec_from_dir(os.path.join(self.dirname, self.savedir))
 
     def write(self):
+        if self.linked_savedir:
+            self.update_link(self.linked_savedir, self.savedir)
+        
         super(QeTask, self).write()
+        
         with self.exec_from_dirname():
-            self.input.write() 
-            # Pierre : reverted to create the savedir
-            if not os.path.exists(self.savedir):
-               os.makedirs(self.savedir, exist_ok=True)
+            self.input.write()
+            if self.linked_savedir: pass
+            elif not os.path.exists(self.savedir):
+                os.makedirs(self.savedir, exist_ok=True)
+        
+            
 
 class QeDFTTask(DFTTask, QeTask):
     """Base class for Quantum Espresso calculations."""
@@ -114,5 +121,17 @@ class BaseQePhTask(MPITask, QeTask):
         """
         super(BaseQePhTask, self).__init__(dirname, **kwargs)
         
+        # TODO : task parity : move these lines to its own class BGWpy/Phonon/PhTask.py
+        # See BGWpy/DFT/dfttask.py for reference of how this is handled.
+        # vvv
+        self.flavor = kwargs.pop('flavor',  'qe')
+        if self.is_flavor_QE:
+            self.version = kwargs.pop('version',  6)
+        # ^^^
+
         self.runscript['PH'] = kwargs.get('PH', 'ph.x')
         self.runscript['PHFLAGS'] = kwargs.get('PHFLAGS', ' ')
+
+    @property
+    def is_flavor_QE(self):
+        return any([tag in self.flavor.lower() for tag in ['qe', 'espresso']])

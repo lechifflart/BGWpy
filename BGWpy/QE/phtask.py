@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 
 from ..core import fortran_str
 from ..core import Namelist, Writable, Card
@@ -44,10 +45,21 @@ class QePhInput(Writable):
             for [index, mass] in amass:
                 key = 'amass({0})'.format(int(index))
                 variables['inputph'][key] = mass
+        
+        # Set alpha_mix(i)
+        if 'alpha_mix' in kwargs:
+            alpha_mix = kwargs['alpha_mix']
+            if type(alpha_mix) is float:
+                variables['inputph']['alpha_mix(1)'] = alpha_mix
+            else:
+                for [index, mixing] in alpha_mix:
+                    key = 'alpha_mix({0})'.format(int(index))
+                    variables['inputph'][key] = mixing
+
         # Other inputph
         keys = ['qplot', 'ldisp', 'nq1','nq2','nq3', 
                 'asr', 'nogg', 'tr2_ph', 'fildyn', 'reduce_io',
-                'electron_phonon']
+                'electron_phonon', 'verbosity']
         for key in keys:
             if key in kwargs:
                 variables['inputph'][key] = kwargs.get(key)
@@ -184,6 +196,10 @@ class QePhTask(BaseQePhTask):
         prefix : str
             Prepended to input/output filenames; must be the same
             used in the calculation of unperturbed system.
+        data_file_fname : str, optional
+            Path to the xml data file produced 
+            by a density calculation ('data-file.xml').
+            Not needed if the phonon calculation is done in the same folder.
         ldisp : bool (False), optional
             Use a wave-vector grid displaced by half a grid step
             in each direction - meaningful only when ldisp is .true.
@@ -225,17 +241,26 @@ class QePhTask(BaseQePhTask):
         # input filename
         self.input.fname = self._input_fname
 
+        # copy xml if in a different folder
+        if 'data_file_fname' in kwargs:
+            self.data_file_fname = kwargs['data_file_fname']
+
         # Run script
         self.runscript['PH'] = 'ph.x'
         self.runscript.append('$MPIRUN $PH $PHFLAGS -in {} &> {}'.format(
                               self._input_fname, self._output_fname))
     
-    # _wfn_fname = 'wfn.cplx'
-    # @property
-    # def wfn_fname(self):
-    #     return os.path.join(self.dirname, self._wfn_fname)
+    @property
+    def data_file_fname(self):
+        return self._data_file_fname
     
-    # @wfn_fname.setter
-    # def wfn_fname(self, value):
-    #     self._wfn_fname = value
-    #     self.input['wfng_file'] = value
+    @data_file_fname.setter
+    def data_file_fname(self, value):
+        self._data_file_fname = value
+        if self.version >= 6:
+            dest = os.path.join(self.savedir, 'data-file-schema.xml')
+            pass
+        else:
+            dest = os.path.join(self.savedir, 'data-file.xml')
+        self.update_copy(value, dest)
+    
