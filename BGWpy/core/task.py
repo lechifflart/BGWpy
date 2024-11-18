@@ -224,6 +224,7 @@ class MPITask(Task):
         nodes_flag: str ('-n')
             Flag to specify the number of nodes to the mpi runner.
         wlm_variables: list, optional
+            List of strings that are added to the header of the submission script.
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
