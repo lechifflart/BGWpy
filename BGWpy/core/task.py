@@ -223,7 +223,7 @@ class MPITask(Task):
             Number of nodes.
         nodes_flag: str ('-n')
             Flag to specify the number of nodes to the mpi runner.
-
+        wlm_variables: list, optional
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
@@ -234,25 +234,32 @@ class MPITask(Task):
         self.nproc = default_mpi['nproc']
         self.nproc_per_node = default_mpi['nproc_per_node']
         
-        # Header
-        pre_header = default_wlm['jobtag']
-        if pre_header:
-            header = []
-            pre_key = 'mpirun_'
-            keys = ('jobname','nodes','time')
-            option_keys = ('option_jobname', 'option_nodes', 'option_time')
-            options = (default_wlm[key] for key in option_keys)
-            flags_keys = ('flags_jobname','flags_nodes','flags_time')
-            flags = (default_wlm[key] for key in flags_keys)
-            # First entry is number of nodes and exclusive flag
-            for key, option, flag in zip(keys, options, flags):
-                key = pre_key + key
-                if key in kwargs:
-                    header.append('{0} {1} {2} {3}'.format(pre_header, option, kwargs[key], flag))
-            # Add entries if any were added
-            if header:
-                self.runscript.header = header + self.runscript.header
         
+        # Submission job tags e..g.: #SBATCH -N 1 --exclusive
+        header = []
+        jobtag = default_wlm['jobtag']
+        
+        keys = ('mpirun_jobname', 'mpirun_nodes', 'mpirun_time')
+        option_keys = ('option_jobname', 'option_nodes', 'option_time')
+        flags_keys = ('flags_jobname','flags_nodes','flags_time')
+        
+        options = (default_wlm[key] for key in option_keys)
+        flags = (default_wlm[key] for key in flags_keys)
+        
+        # Loop through config entries
+        for key, option, flag in zip(keys, options, flags):
+            if key not in kwargs:
+                header.append('{0} {1} {2} {3}'.format(jobtag, option, kwargs[key], flag))
+        
+        # Add any line to the header as needed.
+        if 'wlm_variables' in kwargs:
+            lines = kwargs['wlm_variables']
+            for line in lines:
+                header.append('{0} {1}'.format(jobtag, line))
+
+        # Prepend entries
+        self.runscript.header = header + self.runscript.header
+    
         # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
                     'nproc_per_node', 'nproc_per_node_flag',
