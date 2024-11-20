@@ -251,7 +251,7 @@ class MPITask(Task):
         
         # Loop through config entries
         for key, option, flag in zip(keys, options, flags):
-            if key not in kwargs:
+            if key in kwargs:
                 header.append('{0} {1} {2} {3}'.format(jobtag, option, kwargs[key], flag))
         
         # Add any extra lines to the header as needed.
