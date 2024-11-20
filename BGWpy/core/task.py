@@ -223,8 +223,10 @@ class MPITask(Task):
             Number of nodes.
         nodes_flag: str ('-n')
             Flag to specify the number of nodes to the mpi runner.
-        wlm_variables: list, optional
-            List of strings that are added to the header of the submission script.
+        extra_WLM_lines: list, optional
+            Prepend additional WLM arguments, automatically includes the WLM tag (e.g. #SBATCH).
+        extra_header_lines: list, optional
+            Append any additional lines to the header as needed.
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
@@ -252,15 +254,18 @@ class MPITask(Task):
             if key not in kwargs:
                 header.append('{0} {1} {2} {3}'.format(jobtag, option, kwargs[key], flag))
         
-        # Add any line to the header as needed.
-        if 'wlm_variables' in kwargs:
-            lines = kwargs['wlm_variables']
+        # Add any extra lines to the header as needed.
+        if 'extra_WLM_lines' in kwargs:
+            lines = kwargs['extra_WLM_lines']
             for line in lines:
                 header.append('{0} {1}'.format(jobtag, line))
 
         # Prepend entries
         self.runscript.header = header + self.runscript.header
-    
+        
+        # Append entries from extra_header_lines
+        self.runscript.header += kwargs.get('extra_header_lines', [])
+        
         # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
                     'nproc_per_node', 'nproc_per_node_flag',
