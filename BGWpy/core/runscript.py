@@ -166,7 +166,6 @@ class RunScript(Writable):
 
         S += '\n'
         for line in self.header:
-            print(line)
             S += line + '\n'
 
         for name, value in self.variables.items():

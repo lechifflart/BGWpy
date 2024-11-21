@@ -264,7 +264,7 @@ class MPITask(Task):
         self.runscript.header = header + self.runscript.header
         
         # Append entries from extra_header_lines
-        self.runscript.header = self.runscript.header + kwargs.get('extra_header_lines', [])
+        self.runscript.header += kwargs.get('extra_header_lines', [])
         
         # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
