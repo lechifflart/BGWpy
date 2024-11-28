@@ -23,7 +23,7 @@ class Qe2BgwInput(Namelist):
 
     def __init__(self, *args, **kwargs):
 
-        ngkpt = kwargs.pop('ngkpt', 3*[.0])
+        ngkpt  = kwargs.pop('ngkpt',  3*[.0])
         kshift = kwargs.pop('kshift', 3*[.0])
         qshift = kwargs.pop('qshift', 3*[.0]) 
 
@@ -160,7 +160,7 @@ class Qe2BgwTask(QeDFTTask):
 
         super(Qe2BgwTask, self).__init__(dirname, **kwargs)
 
-        self.ngkpt = kwargs.pop('ngkpt')
+        self.ngkpt  = kwargs.get('ngkpt',  3*[.0])
         self.kshift = kwargs.get('kshift', 3*[.0])
         self.qshift = kwargs.get('qshift', 3*[.0])
 

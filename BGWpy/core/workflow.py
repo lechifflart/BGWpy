@@ -102,12 +102,15 @@ class Workflow(Task):
         for task in tasks:
             self.add_task(task, *args, **kwargs)
 
-    def write(self):
+    def write(self, body_only = False): # Daan ; maybe change to be True on default?
         super(Workflow, self).write()
         for task in self.tasks:
             task.write()
         with self.exec_from_dirname():
             # Overwrite any runscript of the children tasks
+            if body_only: # Only write the body. Useful for running the script from the terminal.
+                self.runscript.header = []
+                self.runscript.footer = []
             self.runscript.write()
 
     #def run_tasks(self):

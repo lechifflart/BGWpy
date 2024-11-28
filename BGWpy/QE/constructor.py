@@ -1,7 +1,7 @@
 from .pwscfinput import PWscfInput
 
 
-def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, option):
+def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, kpts_option):
     """Construct a Quantum Espresso scf input."""
     inp = PWscfInput()
     
@@ -23,16 +23,16 @@ def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, o
         )
     
     inp.system['ecutwfc'] = ecutwfc,
-    inp.set_kpoints_crystal(kpts, wtks, option)
+    inp.set_kpoints_crystal(kpts, wtks, kpts_option)
     inp.structure = structure
     inp.pseudos = pseudos
 
     return inp
 
 
-def get_bands_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, nbnd=None):
+def get_bands_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, kpts_option, nbnd=None):
     """Construct a Quantum Espresso bands input."""
-    inp = get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, 'crystal')
+    inp = get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, kpts_option)
     inp.control['calculation'] = 'bands'
     if nbnd is not None:
         inp.system['nbnd'] = nbnd
