@@ -102,7 +102,7 @@ class Workflow(Task):
         for task in tasks:
             self.add_task(task, *args, **kwargs)
 
-    def write(self, body_only = False): # Daan ; maybe change to be True on default?
+    def write(self, body_only = False): # Daan ; maybe change body_only to be True on default?
         super(Workflow, self).write()
         for task in self.tasks:
             task.write()
