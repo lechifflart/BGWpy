@@ -152,7 +152,7 @@ class PWscfInput(Writable):
             for k, w in zip(kpts, wtks):
                 self.k_points.append(list(k) + [w])
         elif kpts_option == 'automatic':
-            self.k_points.append(kpts + wtks)
+            self.k_points.append(list(kpts) + list(wtks))
 
     @property
     def structure(self):
