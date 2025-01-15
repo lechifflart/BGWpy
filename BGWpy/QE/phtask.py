@@ -59,6 +59,7 @@ class QePhInput(Writable):
         # Other inputph
         keys = ['qplot', 'ldisp', 'nq1','nq2','nq3', 
                 'asr', 'nogg', 'tr2_ph', 'fildvscf', 'fildyn', 'reduce_io',
+                'start_irr', 'last_irr', 'recover',
                 'electron_phonon', 'verbosity']
         for key in keys:
             if key in kwargs:
