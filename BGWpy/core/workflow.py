@@ -3,6 +3,7 @@ import os
 import subprocess
 import pickle
 import contextlib
+import json
 
 from .util import exec_from_dir
 from .runscript import RunScript
@@ -112,6 +113,40 @@ class Workflow(Task):
                 self.runscript.header = []
                 self.runscript.footer = []
             self.runscript.write()
+
+    def write_dependencies(self, fname = 'dependency_relations.json'):
+        """
+        Jobs can depend on, as well as defer, other jobs. 
+        The deference is the inverse of a dependency.
+        """
+        # JSON array of MPITasks with their dependencies / defers
+        relations_list = []
+        # Every task needs to be added, regardless of whether it has dependencies / defers
+        for task in self.tasks:
+            # Collect dirnames and runscript names for `cd dirname` and `sbatch runscript`
+            dependencies_dirname = [ other.dirname for other in task.dependencies ]
+            dependencies_runscript = [ other.runscript.fname for other in task.dependencies ]
+            defers_dirname = [ other.dirname for other in task.defers ]
+            defers_runscript = [ other.runscript.fname for other in task.defers ]
+            # Dictify for easy JSON conversion
+            relations_dict = dict(
+                dirname = task.dirname,
+                runscript = task.runscript.fname,
+                dependencies_dirname = dependencies_dirname,
+                dependencies_runscript = dependencies_runscript,
+                defers_dirname = defers_dirname,
+                defers_runscript = defers_runscript,
+            )
+            relations_list.append(relations_dict)
+        # Write output as a json file.
+        json_object = json.dumps(relations_list, indent = 4)
+        with open(fname, 'w') as file:
+            file.write(json_object)
+        
+            
+
+
+
 
     #def run_tasks(self):
     #    for task in self.tasks:

@@ -227,6 +227,8 @@ class MPITask(Task):
             Prepend additional WLM arguments, automatically includes the WLM tag (e.g. #SBATCH).
         extra_header_lines: list, optional
             Append any additional lines to the header as needed.
+        dependencies: list (MPITask), optional
+            Other tasks that the current task depends on to run first.
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
@@ -274,9 +276,12 @@ class MPITask(Task):
             if key in kwargs:
                 setattr(self, key, kwargs[key])
         
-        
-        
-        
+        # Dependencies
+        self.dependencies = []
+        self.defers = []
+        for other_MPITask in kwargs.get('dependencies',[]):
+            self.dependencies.append(other_MPITask)
+            other_MPITask.defers.append(self)
         
         # This is mostly for backward compatibility
         if 'mpirun_n' in kwargs:
