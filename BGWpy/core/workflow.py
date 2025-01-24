@@ -124,18 +124,16 @@ class Workflow(Task):
         # Every task needs to be added, regardless of whether it has dependencies / defers
         for task in self.tasks:
             # Collect dirnames and runscript names for `cd dirname` and `sbatch runscript`
-            dependencies_dirname = [ other.dirname for other in task.dependencies ]
-            dependencies_runscript = [ other.runscript.fname for other in task.dependencies ]
-            defers_dirname = [ other.dirname for other in task.defers ]
-            defers_runscript = [ other.runscript.fname for other in task.defers ]
+            path = os.path.join(task.dirname, task.runscript.fname)
+            dependencies = [ os.path.join(other.dirname,other.runscript.fname) for other in task.dependencies ]
+            defers = [ os.path.join(other.dirname,other.runscript.fname) for other in task.defers ]
             # Dictify for easy JSON conversion
             relations_dict = dict(
+                path = path,
                 dirname = task.dirname,
                 runscript = task.runscript.fname,
-                dependencies_dirname = dependencies_dirname,
-                dependencies_runscript = dependencies_runscript,
-                defers_dirname = defers_dirname,
-                defers_runscript = defers_runscript,
+                dependencies = dependencies,
+                defers = defers,
             )
             relations_list.append(relations_dict)
         # Write output as a json file.

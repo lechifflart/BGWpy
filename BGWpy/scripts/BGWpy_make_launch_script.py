@@ -248,3 +248,6 @@ def main():
         file.write(header)
         file.write(body)
         file.write(epilog)
+
+if __name__ == '__main__':
+    main()
