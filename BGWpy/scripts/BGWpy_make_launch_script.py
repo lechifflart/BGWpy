@@ -136,6 +136,10 @@ def get_relations():
     return relations
 
 def set_other_exclusions(relations):
+    # Early exit if default start should be used
+    if len(config.start) == 0:
+        return
+    
     include = []
     for start_dir in config.start:
         task = get_by_folder(relations, start_dir)
@@ -150,6 +154,7 @@ def generate_jobnames(relations):
     jobnames = []
     for task in relations:
         basename = os.path.basename(task['dirname'])
+        basename = basename.replace('.','_')
         first_of_run = task['runscript'].split('.')[0]
         jobname = basename + '_' + first_of_run
         jobnames.append(jobname)
@@ -207,7 +212,6 @@ def create_body(relations):
         
         # Check for commenting out
         bool_excluded = dirname in config.exclude or sanitized_dirname in config.exclude
-        print(jobname, dirname)
         pre = '# ' if bool_excluded else ''
         if not config.comment and bool_excluded: continue
         
