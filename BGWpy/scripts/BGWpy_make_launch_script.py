@@ -129,8 +129,10 @@ def follow_defers(relations, task, out = []):
 
 def get_relations():
     relations = read_json()
+
     if not check_valid(relations):
-        relations = sort_tasks(relations)
+        relations, attempts = sort_tasks(relations)
+    
     return relations
 
 def set_other_exclusions(relations):
