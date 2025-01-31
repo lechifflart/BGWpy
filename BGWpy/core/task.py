@@ -48,9 +48,13 @@ class Task(object):
             in order to be effective.
 
         """
+        # Only pass along multiheader to the runscript input, if it is defined.
+        runscript_kwargs = {}
+        if 'multiheader' in kwargs:
+            runscript_kwargs['multiheader'] = kwargs['multiheader']
 
         self.dirname = dirname
-        self.runscript = RunScript()
+        self.runscript = RunScript(**runscript_kwargs)
         self.runscript.fname = runscript_fname
         self.variables = kwargs if store_variables else dict()
 

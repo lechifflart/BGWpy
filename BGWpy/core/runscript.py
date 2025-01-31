@@ -78,9 +78,12 @@ class RunScript(Writable):
         self.first_line = kwargs.get('first_line',
                                      default_runscript['first_line'])
         
-        # Allows the user to define different headers in the config for [runscript]
-        header_key = kwargs.get('runscipt_header', 'header')
-        header = kwargs.get('header', default_runscript['header'])
+        # Allows the user to define different headers in the config for [runscript:multiheader]
+        if 'multiheader' in kwargs:
+            header_key = kwargs['multiheader']
+            header = default_runscript['multiheader'].get(header_key, default_runscript['header'])
+        else:
+            header = kwargs.get('header', default_runscript['header'])
         if isinstance(header, str):
             self.header.append(header)
         elif header is not None:
@@ -138,7 +141,6 @@ class RunScript(Writable):
         del self.variables[key]
 
     def _get_quoted_string(self, value):
-
         # Strip the value of single or double quotes
         # but strip a single occurence ...
         single, double = "'", '"'
