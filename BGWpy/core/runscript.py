@@ -77,7 +77,9 @@ class RunScript(Writable):
         
         self.first_line = kwargs.get('first_line',
                                      default_runscript['first_line'])
-
+        
+        # Allows the user to define different headers in the config for [runscript]
+        header_key = kwargs.get('runscipt_header', 'header')
         header = kwargs.get('header', default_runscript['header'])
         if isinstance(header, str):
             self.header.append(header)

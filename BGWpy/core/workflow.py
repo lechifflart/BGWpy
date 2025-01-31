@@ -120,9 +120,9 @@ class Workflow(Task):
         The deference is the inverse of a dependency.
         """
         # JSON array of MPITasks with their dependencies / defers
-        relations_list = []
+        relations_list = [None] * len(self.tasks)
         # Every task needs to be added, regardless of whether it has dependencies / defers
-        for task in self.tasks:
+        for ii, task in enumerate(self.tasks):
             # Collect dirnames and runscript names for `cd dirname` and `sbatch runscript`
             path = os.path.join(task.dirname, task.runscript.fname)
             dependencies = [ os.path.join(other.dirname,other.runscript.fname) for other in task.dependencies ]
@@ -135,7 +135,8 @@ class Workflow(Task):
                 dependencies = dependencies,
                 defers = defers,
             )
-            relations_list.append(relations_dict)
+            relations_list[ii] = relations_dict
+        
         # Write output as a json file.
         json_object = json.dumps(relations_list, indent = 4)
         with open(fname, 'w') as file:

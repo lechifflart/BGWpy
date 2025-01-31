@@ -53,6 +53,11 @@ if os.path.exists(config_file):
             if key in config[sk]:
                 default_runscript[key] = config[sk][key]
 
+    sk = 'runscript:multiheader'
+    if sk in config:
+        for key, value in config[sk].item():
+            default_runscript['multiheader'][key] = config[sk][key]
+    
     del sk, keys
 
 else:

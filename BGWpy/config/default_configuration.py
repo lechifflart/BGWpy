@@ -25,6 +25,7 @@ default_runscript = dict(
     first_line = '#!/bin/bash',
     header = [],
     footer = [],
+    multiheader = dict(),
     )
 
 flavors = dict(
