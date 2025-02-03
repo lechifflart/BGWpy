@@ -53,6 +53,11 @@ parser.add_argument(
     type=int,
     help='Add a delay in between each sbatch command.'
 )
+parser.add_argument(
+    '-v','--verbose',
+    action='store_true',
+    help='Echo the directory before each sbatch command.'
+)
 
 config = parser.parse_args()
 
@@ -222,6 +227,10 @@ def create_body(relations):
         pre = '# ' if bool_excluded else ''
         if not config.comment and bool_excluded: continue
         
+        # Add verbose echo
+        if config.verbose:
+            bodypart.append('echo {0}'.format(dirname))
+
         # Depth to get back from cd
         depth = len(ppath.parents)
         reverse = '../' * (depth-1)
