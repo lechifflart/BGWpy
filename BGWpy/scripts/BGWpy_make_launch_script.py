@@ -47,6 +47,12 @@ parser.add_argument(
     default = 'launch.sh',
     help='Filename of output file'
 )
+parser.add_argument(
+    '-d','--delay',
+    default = 0,
+    type=int,
+    help='Add a delay in between each sbatch command.'
+)
 
 config = parser.parse_args()
 
@@ -200,8 +206,9 @@ def get_dependency_string(relations, jobnames, dependencies):
 def create_body(relations):
     body_lines = []
     jobnames = generate_jobnames(relations)
-    print(config.exclude)
-    for task, jobname in zip(relations, jobnames):
+    list_last_entry = [False] * len(jobnames)
+    list_last_entry[-1] = True
+    for task, jobname, is_last in zip(relations, jobnames, list_last_entry):
         bodypart = []
         path = task['path']
         dirname = task['dirname']
@@ -230,6 +237,10 @@ def create_body(relations):
         # Leave directory
         bodypart.append('cd {0}'.format(reverse))
         
+        # Add delay if needed
+        if config.delay > 0 and not is_last:
+            bodypart.append('sleep {0}'.format(config.delay))
+
         # Add comments as necessary
         for line in bodypart:
             body_lines.append(pre + line)
