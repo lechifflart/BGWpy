@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jan 24 13:23:07 2025
@@ -19,7 +20,7 @@ parser = argparse.ArgumentParser(
     epilog = 'Dependencies can be specified when creating tasks and written using workflow objects.'
 )
 parser.add_argument(
-    '-f', '--fname', 
+    '-i', '--input', 
     default = 'dependency_relations.json', 
     help='From which JSON file to read dependencies from'
 )
@@ -46,6 +47,11 @@ parser.add_argument(
     '-o','--output', 
     default = 'launch.sh',
     help='Filename of output file'
+)
+parser.add_argument(
+    '-n','--numbers',
+    action='set_true',
+    help='Use numbered jobnames instead of directory / runscript names'
 )
 
 config = parser.parse_args()
@@ -134,6 +140,8 @@ def get_relations():
     return relations
 
 def set_other_exclusions(relations):
+    if len(config.start) == 0:
+        return
     include = []
     for start_dir in config.start:
         task = get_by_folder(relations, start_dir)
@@ -193,7 +201,6 @@ def get_dependency_string(relations, jobnames, dependencies):
 def create_body(relations):
     body_lines = []
     jobnames = generate_jobnames(relations)
-    print(config.exclude)
     for task, jobname in zip(relations, jobnames):
         bodypart = []
         path = task['path']
@@ -205,7 +212,6 @@ def create_body(relations):
         
         # Check for commenting out
         bool_excluded = dirname in config.exclude or sanitized_dirname in config.exclude
-        print(jobname, dirname)
         pre = '# ' if bool_excluded else ''
         if not config.comment and bool_excluded: continue
         
