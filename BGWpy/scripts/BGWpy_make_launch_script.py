@@ -69,7 +69,7 @@ def read_json():
         of each task.
 
     """
-    with open( config.fname, 'r') as file:
+    with open( config.input, 'r') as file:
         relations = json.load(file)
     return relations
 
