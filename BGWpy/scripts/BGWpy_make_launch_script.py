@@ -50,7 +50,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '-n','--numbers',
-    action='set_true',
+    action='store_true',
     help='Use numbered jobnames instead of directory / runscript names'
 )
 
