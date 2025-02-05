@@ -152,17 +152,26 @@ def set_other_exclusions(relations):
 
 # %% JOBNAMES
 
+def numbered_jobnames(relations):
+    jobnames = [ 'jobID{0}'.format(ii) for ii in range(len(relations)) ]
+    return jobnames
+
 def generate_jobnames(relations):
+    # Use numbers instead of directories
+    if config.numbers:
+        return numbered_jobnames(relations)
+
     jobnames = []
     for task in relations:
         basename = os.path.basename(task['dirname'])
         first_of_run = task['runscript'].split('.')[0]
         jobname = basename + '_' + first_of_run
         jobnames.append(jobname)
+    
     if len(jobnames) == len(set(jobnames)):
         return jobnames
-    jobnames = [ 'job{0}'.format(ii) for ii in range(len(relations)) ]
-    return jobnames
+    
+    return numbered_jobnames(relations)
 
 def find_jobname(relations, jobnames, dependency_path):
     for task, jobname in zip(relations, jobnames):
