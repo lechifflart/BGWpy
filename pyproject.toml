@@ -30,6 +30,6 @@ config = ['config/BGWpyrc']
 include-package-data = true
 
 [project.scripts]
-BGWpy_make_config_file = "BGWpy.scripts.BGWpy_make_config_file:main"
-BGWpy_make_launch_script = "BGWpy.scripts.BGWpy_make_launch_script:main"
+BGWpy_make_config_file.py = "BGWpy.scripts.BGWpy_make_config_file:main"
+BGWpy_make_launch_script.py = "BGWpy.scripts.BGWpy_make_launch_script:main"
 
