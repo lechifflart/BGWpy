@@ -9,9 +9,12 @@ name = "BGWpy"
 license = {file = 'license.txt'}
 version = '3.2.3'
 description = 'Interface BerkeleyGW flows in python.'
-authors = [{name = 'Gabriel Antonius', email = 'gabriel.antonius@gmail.com'}]
+authors = [
+    {name = 'Gabriel Antonius', email = 'gabriel.antonius@gmail.com'},
+    {name = 'Daan Holleman', email = 'dholleman123@gmail.com'},
+]
 readme = 'README.md'
-scripts = ['BGWpy/scripts/BGWpy_make_config_file.py']
+
 
 [project.urls]
 Repository = 'https://github.com/BerkeleyGW/BGWpy'
@@ -22,4 +25,11 @@ include = ['data/structures/*', 'data/pseudos/*']
 
 [tool.setuptools.package-data]
 config = ['config/BGWpyrc']
+
+[tool.setuptools]
+include-package-data = true
+
+[project.scripts]
+BGWpy_make_config_file = "BGWpy.scripts.BGWpy_make_config_file:main"
+BGWpy_make_launch_script = "BGWpy.scripts.BGWpy_make_launch_script:main"
 
