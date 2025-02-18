@@ -9,8 +9,16 @@ def get_config():
         use_hdf5_qe = False,
         flavor_complex = True,
         dft_flavor = 'espresso',
-        )
+    )
     
+    config['WLM'] = dict(
+        jobtag = '#SBATCH',
+        option_jobname = '-J',
+        option_time = '-t',
+        option_nodes = '-N',
+        flags_nodes = '--exclusive'
+    )
+
     config['MPI'] = dict(
         mpirun = 'mpirun',
         nproc = 1,
@@ -19,7 +27,7 @@ def get_config():
         nproc_per_node_flag = '--npernode',
         nodes = '',
         nodes_flag = '',
-        )
+    )
     
     config['runscript'] = dict(
         first_line = '#!/bin/sh',
