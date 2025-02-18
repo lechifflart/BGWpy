@@ -3,7 +3,7 @@ import os
 
 from numpy import array
 from ..core import Namelist
-from .qetask import QeTask
+from .qetask import QeDFTTask
 
 from ..config import flavors
 
@@ -23,12 +23,12 @@ class Qe2BgwInput(Namelist):
 
     def __init__(self, *args, **kwargs):
 
-        ngkpt = kwargs.pop('ngkpt', 3*[.0])
+        ngkpt  = kwargs.pop('ngkpt',  3*[.0])
         kshift = kwargs.pop('kshift', 3*[.0])
         qshift = kwargs.pop('qshift', 3*[.0]) 
 
         super(Qe2BgwInput, self).__init__('input_pw2bgw', *args, **kwargs)
-
+        
         # Sort the variables so that they look nice in the input file.
         prefered_order = [
             'prefix',
@@ -101,7 +101,7 @@ class Qe2BgwInput(Namelist):
         self['wfng_dk3'] = self.kqshift[2]
 
 
-class Qe2BgwTask(QeTask):
+class Qe2BgwTask(QeDFTTask):
     """Wavefunctions convertion."""
 
     _TASK_NAME = 'PW2BGW'
@@ -160,7 +160,7 @@ class Qe2BgwTask(QeTask):
 
         super(Qe2BgwTask, self).__init__(dirname, **kwargs)
 
-        self.ngkpt = kwargs.pop('ngkpt')
+        self.ngkpt  = kwargs.get('ngkpt',  3*[.0])
         self.kshift = kwargs.get('kshift', 3*[.0])
         self.qshift = kwargs.get('qshift', 3*[.0])
 

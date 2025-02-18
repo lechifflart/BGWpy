@@ -1,14 +1,14 @@
 from __future__ import print_function
 import os
 
-from .qetask      import QeTask
+from .qetask      import QeDFTTask
 from .constructor import get_bands_input
 
 # Public
 __all__ = ['QeWfnTask']
 
 
-class QeWfnTask(QeTask):
+class QeWfnTask(QeDFTTask):
     """Wavefunctions calculation."""
 
     _TASK_NAME = 'Wfn'
@@ -75,7 +75,9 @@ class QeWfnTask(QeTask):
         self.add_pseudos_copy()
 
         kpts, wtks = self.get_kpts(**kwargs)
-
+        kpts_option = 'automatic' if kwargs.get('autokpt', False) else kwargs.get('kpts_option', 'crystal')
+        
+        
         self.charge_density_fname = kwargs['charge_density_fname']
         if 'spin_polarization_fname' in kwargs:
             self.spin_polarization_fname = kwargs['spin_polarization_fname']
@@ -91,6 +93,7 @@ class QeWfnTask(QeTask):
             kwargs['ecutwfc'],
             kpts,
             wtks,
+            kpts_option,
             nbnd = kwargs.get('nbnd'),
             )
 

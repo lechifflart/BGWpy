@@ -3,6 +3,7 @@ import os
 import subprocess
 import pickle
 import contextlib
+import json
 
 from .util import exec_from_dir
 from .runscript import RunScript
@@ -102,13 +103,48 @@ class Workflow(Task):
         for task in tasks:
             self.add_task(task, *args, **kwargs)
 
-    def write(self):
+    def write(self, body_only = False): # Daan ; maybe change body_only to be True on default?
         super(Workflow, self).write()
         for task in self.tasks:
             task.write()
         with self.exec_from_dirname():
             # Overwrite any runscript of the children tasks
+            if body_only: # Only write the body. Useful for running the script from the terminal.
+                self.runscript.header = []
+                self.runscript.footer = []
             self.runscript.write()
+
+    def write_dependencies(self, fname = 'dependency_relations.json'):
+        """
+        Jobs can depend on, as well as defer, other jobs. 
+        The deference is the inverse of a dependency.
+        """
+        # JSON array of MPITasks with their dependencies / defers
+        relations_list = []
+        # Every task needs to be added, regardless of whether it has dependencies / defers
+        for task in self.tasks:
+            # Collect dirnames and runscript names for `cd dirname` and `sbatch runscript`
+            path = os.path.join(task.dirname, task.runscript.fname)
+            dependencies = [ os.path.join(other.dirname,other.runscript.fname) for other in task.dependencies ]
+            defers = [ os.path.join(other.dirname,other.runscript.fname) for other in task.defers ]
+            # Dictify for easy JSON conversion
+            relations_dict = dict(
+                path = path,
+                dirname = task.dirname,
+                runscript = task.runscript.fname,
+                dependencies = dependencies,
+                defers = defers,
+            )
+            relations_list.append(relations_dict)
+        # Write output as a json file.
+        json_object = json.dumps(relations_list, indent = 4)
+        with open(fname, 'w') as file:
+            file.write(json_object)
+        
+            
+
+
+
 
     #def run_tasks(self):
     #    for task in self.tasks:

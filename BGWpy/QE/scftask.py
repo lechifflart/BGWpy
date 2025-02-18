@@ -1,14 +1,14 @@
 from __future__ import print_function
 import os
 
-from .qetask      import QeTask
+from .qetask      import QeDFTTask
 from .constructor import get_scf_input
 
 # Public
 __all__ = ['QeScfTask']
 
 
-class QeScfTask(QeTask):
+class QeScfTask(QeDFTTask):
     """Charge density calculation."""
 
     _TASK_NAME = 'SCF'
@@ -51,12 +51,15 @@ class QeScfTask(QeTask):
             Absolute shift of the k-points grid along each direction.
         symkpt : bool (True), optional
             Use symmetries for the k-point grid generation.
+        autokpt : bool (False), optional
+            Use automatic kpoints by QE for the k-point grid generation.
+            Supply the kpoints using `ngkpt` and the shift using `kshift`.
         kpts : 2D list(nkpt,3), float, optional
             List of k-points.
             K-points are either specified using ngkpt or using kpts and wtks.
         wtks : list(nkpt), float, optional
             Weights of each k-point.
-
+        
 
         Properties
         ----------
@@ -75,7 +78,8 @@ class QeScfTask(QeTask):
         super(QeScfTask, self).__init__(dirname, **kwargs)
 
         kpts, wtks = self.get_kpts(**kwargs)
-
+        kpts_option = 'automatic' if kwargs.get('autokpt', False) else kwargs.get('kpts_option', 'crystal')
+        
         # Input file
         self.input = get_scf_input(
             self.prefix,
@@ -85,6 +89,7 @@ class QeScfTask(QeTask):
             kwargs['ecutwfc'],
             kpts,
             wtks,
+            kpts_option,
             )
 
         if 'variables' in kwargs:

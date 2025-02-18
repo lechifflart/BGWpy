@@ -116,13 +116,14 @@ class Task(object):
 
         reltarget = os.path.relpath(
             target, os.path.join(self.dirname, os.path.dirname(dest)))
-
+        
         for link in self.runscript.links:
             if link[1] == dest:
                 link[0] = reltarget
                 break
         else:
             self.runscript.add_link(reltarget, dest)
+        
 
     def remove_link(self, dest):
         """Remove a link from the name of the destination."""
@@ -222,7 +223,12 @@ class MPITask(Task):
             Number of nodes.
         nodes_flag: str ('-n')
             Flag to specify the number of nodes to the mpi runner.
-
+        extra_WLM_lines: list, optional
+            Prepend additional WLM arguments, automatically includes the WLM tag (e.g. #SBATCH).
+        extra_header_lines: list, optional
+            Append any additional lines to the header as needed.
+        dependencies: list (MPITask), optional
+            Other tasks that the current task depends on to run first.
         """
 
         super(MPITask, self).__init__(*args, **kwargs)
@@ -233,24 +239,34 @@ class MPITask(Task):
         self.nproc = default_mpi['nproc']
         self.nproc_per_node = default_mpi['nproc_per_node']
         
-        # Header
-        pre_header = default_wlm['jobtag']
-        if pre_header:
-            header = []
-            pre_key = 'mpirun_'
-            keys = ('jobname','nodes','time')
-            option_keys = ('option_jobname', 'option_nodes', 'option_time')
-            options = (default_wlm[key] for key in option_keys)
-            flags_keys = ('flags_jobname','flags_nodes','flags_time')
-            flags = (default_wlm[key] for key in flags_keys)
-            # First entry is number of nodes and exclusive flag
-            for key, option, flag in zip(keys, options, flags):
-                key = pre_key + key
-                if key in kwargs:
-                    header.append('{0} {1} {2} {3}'.format(pre_header, option, kwargs[key], flag))
-            # Add entries if any were added
-            if header:
-                self.runscript.header = header + self.runscript.header
+        
+        # Submission job tags e..g.: #SBATCH -N 1 --exclusive
+        header = []
+        jobtag = default_wlm['jobtag']
+        
+        keys = ('mpirun_jobname', 'mpirun_nodes', 'mpirun_time')
+        option_keys = ('option_jobname', 'option_nodes', 'option_time')
+        flags_keys = ('flags_jobname','flags_nodes','flags_time')
+        
+        options = (default_wlm[key] for key in option_keys)
+        flags = (default_wlm[key] for key in flags_keys)
+        
+        # Loop through config entries
+        for key, option, flag in zip(keys, options, flags):
+            if key in kwargs:
+                header.append('{0} {1} {2} {3}'.format(jobtag, option, kwargs[key], flag))
+        
+        # Add any extra lines to the header as needed.
+        if 'extra_WLM_lines' in kwargs:
+            lines = kwargs['extra_WLM_lines']
+            for line in lines:
+                header.append('{0} {1}'.format(jobtag, line))
+
+        # Prepend entries
+        self.runscript.header = header + self.runscript.header
+        
+        # Append entries from extra_header_lines
+        self.runscript.header += kwargs.get('extra_header_lines', [])
         
         # Program flags
         for key in ('mpirun', 'nproc', 'nproc_flag',
@@ -260,9 +276,12 @@ class MPITask(Task):
             if key in kwargs:
                 setattr(self, key, kwargs[key])
         
-        
-        
-        
+        # Dependencies
+        self.dependencies = []
+        self.defers = []
+        for other_MPITask in kwargs.get('dependencies',[]):
+            self.dependencies.append(other_MPITask)
+            other_MPITask.defers.append(self)
         
         # This is mostly for backward compatibility
         if 'mpirun_n' in kwargs:

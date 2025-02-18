@@ -102,7 +102,7 @@ class EpsilonTask(BGWTask):
 
         ex = 'epsilon.cplx.x' if self._flavor_complex else 'epsilon.real.x'
         self.runscript['EPSILON'] = ex
-        if 'restart' not in extra_lines :
+        if 'restart' not in extra_lines: # Daan; This is a bit hacky. A dedicated keyword would be better i.m.o.
             self.runscript.append('rm -f {} {}'.format(self.eps0mat_fname,self.epsmat_fname))
         self.runscript.append('$MPIRUN $EPSILON &> {}'.format(self._output_fname))
 

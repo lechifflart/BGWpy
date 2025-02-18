@@ -145,11 +145,14 @@ class PWscfInput(Writable):
 
         return S
 
-    def set_kpoints_crystal(self, kpts, wtks):
-        self.k_points.option = 'crystal'
-        self.k_points.append(len(kpts))
-        for k, w in zip(kpts, wtks):
-            self.k_points.append(list(k) + [w])
+    def set_kpoints_crystal(self, kpts, wtks, kpts_option):
+        self.k_points.option = kpts_option
+        if kpts_option in ['crystal', 'crystal_b']:
+            self.k_points.append(len(kpts))
+            for k, w in zip(kpts, wtks):
+                self.k_points.append(list(k) + [w])
+        elif kpts_option == 'automatic':
+            self.k_points.append(list(kpts) + list(wtks))
 
     @property
     def structure(self):
@@ -160,34 +163,40 @@ class PWscfInput(Writable):
         """A pymatgen.Structure object."""
         self._structure = structure
 
-        # Set system specifications
-        self.system['ibrav'] = 0
-        self.system['nat'] = structure.num_sites
-        self.system['ntyp'] = structure.ntypesp
-
         # Set cell parameters
         self.cell_parameters.option = 'angstrom'
         #for vec in structure.lattice_vectors():
         for vec in structure.lattice.matrix:
             self.cell_parameters.append(np.round(vec, 8))
-
-        # Set atomic species
-        types_of_specie = sorted(set(structure.species), key=structure.species.index)
-        for element in types_of_specie:
-            self.atomic_species.append([element.symbol, float(element.atomic_mass)])
-
+        
+        # Set atomic label and mass
+        species_label = sorted(set(structure.labels), key=structure.labels.index)
+        for label in species_label:
+            species = structure.species[ structure.labels.index(label) ]
+            # Quantum Espresso does not allow for labels of length > 3
+            if len(label) > 3:
+                warnings.warn('Label length of atom `{label}` cannot exceed 3 characters!'.format(label))
+            self.atomic_species.append([label, float(species.atomic_mass), ''])
+        
         if self.pseudos:
-            for i, pseudo in enumerate(self.pseudos):
-                self.atomic_species[i].append(pseudo)
+            for ii, pseudo in enumerate(self.pseudos):
+                self.atomic_species[ii][2] = pseudo
+        
+        # Set system specifications
+        self.system['ibrav'] = 0
+        self.system['nat'] = structure.num_sites
+        self.system['ntyp'] = len(species_label)
 
+        
+        
         # Set atomic positions
         self.atomic_positions.option = 'crystal'
-        for site in structure.sites:
+        for site, label in zip(structure.sites, structure.labels):
             frac_coords = list(site.frac_coords)
             for i in range(3):
                 if abs(frac_coords[i]) > .5:
                     frac_coords[i] += -1. * np.sign(frac_coords[i])
-            self.atomic_positions.append([site.specie.symbol] + frac_coords)
+            self.atomic_positions.append([label] + frac_coords)
 
     @property
     def pseudos(self):
@@ -197,11 +206,17 @@ class PWscfInput(Writable):
     def pseudos(self, pseudos):
         self._pseudos = pseudos
         if self.atomic_species:
-            for i, pseudo in enumerate(pseudos):
-                self.atomic_species[i].append(pseudo)
+            if len(self.atomic_species) != len(pseudos):
+                warnings.warn('Number of labelled atoms does not match number of pseudos!')
+            for [ii, pseudo], _ in zip(enumerate(pseudos), self.atomic_species):
+                self.atomic_species[ii][2] = pseudo
 
     def check_pseudos_names(self):
-        for symbol, mass, pseudo in self.atomic_species:
+        species_info = [ len(row)==3 for row in self.atomic_species ]
+        if not any(species_info):
+            raise Exception('Cannot check pseudos if they have not been set!')
+        if any(species_info) and not all(species_info):
+            raise Exception('Only some pseudos have been set!')
+        for symbol, _, pseudo in self.atomic_species:
             if symbol.lower() not in pseudo.lower():
                 warnings.warn('Suspicious pseudo name for atom {}: {}'.format(symbol, pseudo))
-
