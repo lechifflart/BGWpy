@@ -57,7 +57,8 @@ class QePhInput(Writable):
                     variables['inputph'][key] = mixing
 
         # Other inputph
-        keys = ['qplot', 'ldisp', 'nq1','nq2','nq3', 
+        keys = ['qplot', 'ldisp', 'nq1','nq2','nq3',
+		'trans', 
                 'asr', 'nogg', 'tr2_ph', 'fildvscf', 'fildyn', 'reduce_io',
                 'start_irr', 'last_irr', 'recover',
                 'electron_phonon', 'verbosity']
