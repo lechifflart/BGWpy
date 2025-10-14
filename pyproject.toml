@@ -1,35 +1,35 @@
 [build-system]
-requires = ["setuptools >= 64", "setuptools-scm",
-            "numpy >= 1.6",
-            "pymatgen >= 2021"]
+requires = ["setuptools >= 64", "setuptools-scm", "numpy >= 1.6", "pymatgen >= 2021"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "BGWpy"
-license = {file = 'license.txt'}
-version = '3.2.3'
-description = 'Interface BerkeleyGW flows in python.'
+version = "3.2.3"  # Remove if using setuptools-scm
+description = "Interface BerkeleyGW flows in python."
+license = {file = "license.txt"}
 authors = [
-    {name = 'Gabriel Antonius', email = 'gabriel.antonius@gmail.com'},
-    {name = 'Daan Holleman', email = 'dholleman123@gmail.com'},
+    {name = "Gabriel Antonius", email = "gabriel.antonius@gmail.com"},
+    {name = "Daan Holleman", email = "dholleman123@gmail.com"},
 ]
-readme = 'README.md'
-
+readme = "README.md"
+dependencies = [
+    "numpy >= 1.6",
+    "pymatgen >= 2021"
+]
 
 [project.urls]
-Repository = 'https://github.com/BerkeleyGW/BGWpy'
-
-[tool.setuptools.packages.find]
-where = ['BGWpy']
-include = ['data/structures/*', 'data/pseudos/*']
-
-[tool.setuptools.package-data]
-config = ['config/BGWpyrc']
-
-[tool.setuptools]
-include-package-data = true
+Repository = "https://github.com/BerkeleyGW/BGWpy"
 
 [project.scripts]
 BGWpy_make_config_file = "BGWpy.scripts.BGWpy_make_config_file:main"
 BGWpy_make_launch_script = "BGWpy.scripts.BGWpy_make_launch_script:main"
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["BGWpy"]
+
+[tool.setuptools.package-data]
+BGWpy = ["data/structures/*", "data/pseudos/*", "config/BGWpyrc"]
