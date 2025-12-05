@@ -128,19 +128,3 @@ class AbsorptionInput(BasicInputFile):
         super(AbsorptionInput, self).__init__(all_variables, keywords)
 
 
-class ESFInput(BasicInputFile):
-    """Input file for excited-state forces."""
-
-    def __init__(self, iexc, eqp_file, exciton_file, el_ph_dir,
-                 *keywords, **variables):
-
-        all_variables = OrderedDict([
-            ('iexc', iexc),
-            ('eqp_file', eqp_file),
-            ('exciton_file', exciton_file),
-            ('el_ph_dir', el_ph_dir),
-            ])
-
-        all_variables.update(variables)
-
-        super(ESFInput, self).__init__(all_variables, keywords)

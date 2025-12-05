@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jan 24 13:23:07 2025
@@ -54,14 +54,11 @@ parser.add_argument(
     help='Use numbered jobnames instead of directory / runscript names'
 )
 
-
-def parse_args(args=None):
-    """Parse CLI arguments; split out so the module can be imported without side effects."""
-    return parser.parse_args(args)
+config = parser.parse_args()
 
 # %% LOAD JSON
 
-def read_json(config):
+def read_json():
     """
     Read the JSON with the dependency relations.
 
@@ -72,7 +69,7 @@ def read_json(config):
         of each task.
 
     """
-    with open(config.input, 'r') as file:
+    with open( config.input, 'r') as file:
         relations = json.load(file)
     return relations
 
@@ -136,15 +133,15 @@ def follow_defers(relations, task, out = []):
         out = follow_defers(relations, other, out)
     return out
 
-def get_relations(config):
-    relations = read_json(config)
+def get_relations():
+    relations = read_json()
 
     if not check_valid(relations):
         relations, attempts = sort_tasks(relations)
     
     return relations
 
-def set_other_exclusions(config, relations):
+def set_other_exclusions(relations):
     # Early exit if default start should be used
     if len(config.start) == 0:
         return
@@ -163,7 +160,7 @@ def numbered_jobnames(relations):
     jobnames = [ 'jobID{0}'.format(ii) for ii in range(len(relations)) ]
     return jobnames
 
-def generate_jobnames(config, relations):
+def generate_jobnames(relations):
     # Use numbers instead of directories
     if config.numbers:
         return numbered_jobnames(relations)
@@ -200,7 +197,7 @@ def create_header():
     header = '\n'.join(header_lines)
     return header
 
-def get_dependency_string(config, relations, jobnames, dependencies):
+def get_dependency_string(relations, jobnames, dependencies):
     dependency_names = []
     for dep_path in dependencies:
         exclude_path = os.path.basename(os.path.dirname(dep_path))
@@ -215,9 +212,9 @@ def get_dependency_string(config, relations, jobnames, dependencies):
     
     return dependency_string
 
-def create_body(config, relations):
+def create_body(relations):
     body_lines = []
-    jobnames = generate_jobnames(config, relations)
+    jobnames = generate_jobnames(relations)
     for task, jobname in zip(relations, jobnames):
         bodypart = []
         path = task['path']
@@ -240,7 +237,7 @@ def create_body(config, relations):
         bodypart.append('cd {0}'.format(dirname))
         
         # Write sbatch commands
-        dependency_string = get_dependency_string(config, relations, jobnames, dependencies)
+        dependency_string = get_dependency_string(relations, jobnames, dependencies)
         line = '{0}=$(sbatch $default{1} {2})'.format(jobname, dependency_string, runscript)
         bodypart.append(line)
         
@@ -259,13 +256,12 @@ def create_body(config, relations):
 
 # %% MAIN
 
-def main(args=None):
-    config = parse_args(args)
-    relations = get_relations(config)
-    set_other_exclusions(config, relations)
+def main():
+    relations = get_relations()
+    set_other_exclusions(relations)
     
     header = create_header()
-    body = create_body(config, relations)
+    body = create_body(relations)
     epilog = '# Created using BGWpy_make_launch_script.py\n'
     
     with open(config.output, 'w') as file:
