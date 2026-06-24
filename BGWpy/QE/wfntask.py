@@ -168,7 +168,9 @@ class QeWfnTask(QeDFTTask):
 
     @pseudo_dir.setter
     def pseudo_dir(self, value):
-        if os.path.realpath(value) == value.rstrip(os.path.sep):
+        # Keep absolute paths absolute (isabs is immune to symlinked homes,
+        # e.g. /home -> /gpfs on HPC); only relativize genuinely relative paths.
+        if os.path.isabs(value):
             self._pseudo_dir = value
         else:
             self._pseudo_dir = os.path.relpath(value, self.dirname)
