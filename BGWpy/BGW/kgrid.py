@@ -130,7 +130,9 @@ class KgridTask(Task):
         abc = np.array(structure.lattice.abc)
     
         latt_vec_rel = (structure.lattice.matrix.transpose() / abc).transpose().round(12)
-        pos_cart_rel = np.dot(structure.frac_coords, latt_vec_rel).round(6)
+        # Pierre : 6 decimals hid most symmetries of a supercell from kgrid.x
+        # (6 instead of 48 for a 3x3x3 cell). Match the lattice precision.
+        pos_cart_rel = np.dot(structure.frac_coords, latt_vec_rel).round(12)
     
         S = ''
     
@@ -355,7 +357,8 @@ def get_kgrid_input(structure, ngkpt, kshift=[.0,.0,.0], qshift=[.0,.0,.0],
     abc = np.array(structure.lattice.abc)
 
     latt_vec_rel = (structure.lattice.matrix.transpose() / abc).transpose().round(12)
-    pos_cart_rel = np.dot(structure.frac_coords, latt_vec_rel).round(6)
+    # Pierre : see KgridTask.get_kgrid_input above.
+    pos_cart_rel = np.dot(structure.frac_coords, latt_vec_rel).round(12)
 
     S = ''
 
