@@ -18,7 +18,7 @@ def get_scf_input(prefix, pseudo_dir, pseudos, structure, ecutwfc, kpts, wtks, k
         mixing_beta = 0.7,
         mixing_ndim = 8,
         diagonalization = 'david',
-        diago_david_ndim = 4,
+        diago_david_ndim = 2,
         diago_full_acc = True,
         )
     
